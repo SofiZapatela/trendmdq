@@ -26,39 +26,23 @@
 export default async function handler(req, res) {
   const { code } = req.query;
 
-  if (!code) {
-    return res.status(400).json({ error: "Missing code parameter" });
-  }
+  const clientId = process.env.GITHUB_CLIENT_ID;
+  const clientSecret = process.env.GITHUB_CLIENT_SECRET;
 
-  try {
-    const clientId = process.env.GITHUB_CLIENT_ID;
-    const clientSecret = process.env.GITHUB_CLIENT_SECRET;
+  const response = await fetch('https://github.com/login/oauth/access_token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({ client_id: clientId, client_secret: clientSecret, code }),
+  });
 
-    const response = await fetch('https://github.com/login/oauth/access_token', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        client_id: clientId,
-        client_secret: clientSecret,
-        code,
-      }),
-    });
+  const data = await response.json();
+  console.log('GitHub OAuth response:', data);
 
-    const data = await response.json();
-    console.log("GitHub OAuth response:", data);
-
-    if (data.access_token) {
-      // Redirigir correctamente al CMS
-      res.redirect(`/admin/#access_token=${data.access_token}`);
-    } else {
-      res.status(400).json({ error: 'OAuth failed', details: data });
-    }
-  } catch (err) {
-    console.error("OAuth callback error:", err);
-    res.status(500).json({ error: "Server error", details: err.message });
+  if (data.access_token) {
+    // ⚡️ ojo con la redirección: asegurate que exista /admin/index.html
+    res.redirect(`https://trendmdq.vercel.app/admin/index.html#access_token=${data.access_token}`);
+  } else {
+    res.status(400).json({ error: 'OAuth failed', details: data });
   }
 }
 
