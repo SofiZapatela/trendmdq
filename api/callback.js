@@ -40,6 +40,7 @@ export default async function handler(req, res) {
   if (data.access_token) {
     // 👇 redirigir exactamente al archivo donde está Decap
     res.redirect(`/admin/cms.html#access_token=${data.access_token}`);
+
   } else {
     console.error('OAuth failed', data);
     res.status(400).json({ error: 'OAuth failed', details: data });

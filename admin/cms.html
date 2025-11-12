@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -5,6 +6,25 @@
     <title>Trend MDQ CMS</title>
   </head>
   <body>
+    <script>
+      // 🔥 Captura del access_token manual
+      const hash = window.location.hash;
+      if (hash && hash.includes('access_token=')) {
+        const token = hash.split('access_token=')[1];
+        if (token) {
+          // Guardamos el token para que Decap pueda usarlo
+          localStorage.setItem('netlify-cms-user', JSON.stringify({
+            token,
+            backendName: 'github',
+            login: 'github'
+          }));
+          // Limpiamos el hash para que no recargue en loop
+          window.location.hash = '';
+        }
+      }
+    </script>
+
+    <!-- Cargar Decap CMS -->
     <script src="https://unpkg.com/decap-cms@3.0.0/dist/decap-cms.js"></script>
   </body>
 </html>
