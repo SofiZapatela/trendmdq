@@ -1,9 +1,10 @@
 backend:
-  name: git-gateway
+  name: github
+  repo: SofiZapatela/trendmdq
   branch: main
-  site_domain: trendmdq.netlify.app
+  open_authoring: true
 
-media_folder: "fotos" # carpeta donde se guardan las imágenes
+media_folder: "fotos"
 public_folder: "/fotos"
 
 collections:
