@@ -40,7 +40,7 @@ export default async function handler(req, res) {
 
   if (data.access_token) {
     // ⚡️ ojo con la redirección: asegurate que exista /admin/index.html
-    res.redirect(`https://trendmdq.vercel.app/admin/index.html#access_token=${data.access_token}`);
+    res.redirect(`https://trendmdq.vercel.app/public/admin/cms.html#access_token=${data.access_token}`);
   } else {
     res.status(400).json({ error: 'OAuth failed', details: data });
   }
