@@ -38,13 +38,12 @@ export default async function handler(req, res) {
   console.log('GitHub OAuth response:', data);
 
   if (data.access_token) {
-    // 👇 redirigir exactamente al archivo donde está Decap
-    res.redirect(`/admin/cms.html#access_token=${data.access_token}`);
+  res.redirect(`https://trendmdq.vercel.app/admin/cms.html#access_token=${data.access_token}`);
+} else {
+  console.error('OAuth failed', data);
+  res.status(400).json({ error: 'OAuth failed', details: data });
+}
 
-  } else {
-    console.error('OAuth failed', data);
-    res.status(400).json({ error: 'OAuth failed', details: data });
-  }
 }
 
 
