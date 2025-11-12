@@ -2,7 +2,7 @@ backend:
   name: git-gateway
   branch: main
 
-media_folder: "fotos"
+media_folder: "fotos" # carpeta donde se guardan las imágenes
 public_folder: "/fotos"
 
 collections:
@@ -11,13 +11,10 @@ collections:
     folder: "productos"
     create: true
     slug: "{{slug}}"
-    extension: "html"
-    format: "frontmatter"
     fields:
-      - { label: "Título", name: "title", widget: "string" }
-      - { label: "Descripción", name: "description", widget: "text" }
-      - { label: "Precio", name: "precio", widget: "number" }
-      - { label: "Talle", name: "talle", widget: "string" }
-      - { label: "Tipo de prenda", name: "tipo", widget: "string" }
-      - { label: "Imagen principal", name: "image", widget: "image" }
-      - { label: "Contenido (HTML del producto)", name: "body", widget: "markdown" }
+      - { label: "Nombre", name: "nombre", widget: "string" }
+      - { label: "Precio", name: "precio", widget: "string" }
+      - { label: "Descripción", name: "descripcion", widget: "text" }
+      - { label: "Imagen principal", name: "imagen", widget: "image" }
+      - { label: "Categoría", name: "categoria", widget: "select", options: ["remeras", "pantalones", "abrigos", "tejidos"] }
+      - { label: "Stock", name: "stock", widget: "number", value_type: "int" }
