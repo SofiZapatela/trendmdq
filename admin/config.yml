@@ -4,6 +4,8 @@ backend:
   branch: main
   open_authoring: true
 
+publish_mode: editorial_workflow
+
 media_folder: "fotos"
 public_folder: "/fotos"
 
@@ -18,5 +20,5 @@ collections:
       - { label: "Precio", name: "precio", widget: "string" }
       - { label: "Descripción", name: "descripcion", widget: "text" }
       - { label: "Imagen principal", name: "imagen", widget: "image" }
-      - { label: "Categoría", name: "categoria", widget: "select", options: ["remeras", "pantalones", "abrigos", "tejidos"] }
+      - { label: "Categoría", name: "categoria", widget: "select", options: ["vestido", "pantalones", "blusa", "campera", "mono", "falda", "conjunto", "chaqueta", "zapatos"] }
       - { label: "Stock", name: "stock", widget: "number", value_type: "int" }
