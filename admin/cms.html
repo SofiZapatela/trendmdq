@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
   <head>
@@ -7,24 +6,32 @@
   </head>
   <body>
     <script>
-      // 🔥 Captura del access_token manual
+      // --- 1️⃣ Interceptar el token del hash si existe ---
       const hash = window.location.hash;
       if (hash && hash.includes('access_token=')) {
-        const token = hash.split('access_token=')[1];
+        const token = hash.split('access_token=')[1].split('&')[0];
         if (token) {
-          // Guardamos el token para que Decap pueda usarlo
-          localStorage.setItem('netlify-cms-user', JSON.stringify({
-            token,
+          console.log("Access token detectado:", token);
+
+          // --- 2️⃣ Guardar el token en el formato que Decap espera ---
+          const user = {
             backendName: 'github',
-            login: 'github'
-          }));
-          // Limpiamos el hash para que no recargue en loop
+            login: 'github',
+            token: token,
+          };
+          localStorage.setItem('netlify-cms-user', JSON.stringify(user));
+
+          // --- 3️⃣ Limpiar el hash y recargar sin él ---
           window.location.hash = '';
+          window.location.reload();
         }
+      } else {
+        // --- 4️⃣ Mostrar info de depuración ---
+        console.log("No se detectó token en la URL. Decap se iniciará normalmente.");
       }
     </script>
 
-    <!-- Cargar Decap CMS -->
+    <!-- --- 5️⃣ Cargar Decap CMS --- -->
     <script src="https://unpkg.com/decap-cms@3.0.0/dist/decap-cms.js"></script>
   </body>
 </html>
