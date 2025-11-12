@@ -2,9 +2,10 @@ backend:
   name: github
   repo: SofiZapatela/trendmdq
   branch: main
-  base_url: https://trendmdq.vercel.app/api
-  auth_endpoint: auth
-  publish_mode: simple
+  base_url: https://trendmdq.vercel.app/api/auth
+  auth_endpoint: callback
+  open_authoring: true
+  publish_mode: editorial_workflow
 
 media_folder: "fotos"
 public_folder: "/fotos"
