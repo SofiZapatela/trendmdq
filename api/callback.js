@@ -13,8 +13,10 @@ export default async function handler(req, res) {
   const data = await response.json();
 
   if (data.access_token) {
+    // 🔥 importante: redirigir al CMS con el token
     res.redirect(`/admin/cms.html#access_token=${data.access_token}`);
   } else {
+    console.error('OAuth failed', data);
     res.status(400).json({ error: 'OAuth failed', details: data });
   }
 }
