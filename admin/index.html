@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../style.css">
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
+  <link rel="icon" type="image/png" href="../fotos/logo claro.png">
+  <title>Trend MDQ</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+  <!-- Poppins desde Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pIVXjEpT52k+bT7u8sQlj8A6V7xo1KaOxGdrpqCF1YvyyqBlGbHShD81F60ydCkLJb7X5yLVrWm9O6bGMhT9A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
+
+<meta property="og:title" content="Trend Mdq" />
+<meta property="og:description" content="Ropa hermosa para personas que cuidan el ambiente!" />
+<meta property="og:image" content="https://trendmdq.netlify.app/../fotos/logo.png" />
+<meta property="og:url" content="https://trendmdq.netlify.app/" />
+<meta property="og:type" content="website" />
+
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="index.html#hero">
+  <img src="../fotos/logo.png" alt="Logo Trend">
+</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse justify-content-end text-end" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link active" href="#inicio">Inicio</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#productos">Productos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#tejidos">Tejidos</a>
+        </li> 
+        <li class="nav-item">
+          <a class="nav-link" href="../nosotros.html">Nosotros</a>
+        </li> 
+        <li class="nav-item">
+          <a class="nav-link" href="#contacto">Contacto</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+
+
+<header class="hero">
+  <div class="hero-overlay"></div>
+  <img src="../fotos/fondo mar.png" alt="fondo mar" class="hero-bg">
+  <div class="hero-text">
+    <img src="../fotos/logo claro.png" alt="logo">
+    <h1 class="brand">
+      Trend
+      <span class="sub">MDQ</span>
+    </h1>
+  </div>
+</header>
+
+
+  <!-- CARRUSEL -->
+<section class="carrousel-container">
+  <div class="carrousel">
+    <h2>NUEVOS INGRESOS</h2>
+    <div class="swiper mySwiper">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide"><img src="../fotos/blusa-amalfi.jpeg" alt="Nuevo 1"></div>
+        <div class="swiper-slide"><img src="../fotos/blusa-jean.jpeg" alt="Nuevo 2"></div>
+        <div class="swiper-slide"><img src="../fotos/mono-leopardo.jpeg" alt="Nuevo 3"></div>
+        <div class="swiper-slide"><img src="../fotos/mono-taxi.jpeg" alt="Nuevo 4"></div>
+        <div class="swiper-slide"><img src="../fotos/vestido-cielo.jpeg" alt="Nuevo 5"></div>
+        <div class="swiper-slide"><img src="../fotos/vestido-nube.jpeg" alt="Nuevo 6"></div>
+        <div class="swiper-slide"><img src="../fotos/vestido-fuego.jpeg" alt="Nuevo 7"></div>
+        <div class="swiper-slide"><img src="../fotos/vestido-esperanza.jpeg" alt="Nuevo 8"></div>
+      </div>
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+    </div>
+  </div>
+</section>
+
+  <!-- PRODUCTOS -->
+  <section id="productos">
+    <h2>Nuestros Productos</h2>
+
+
+<div class="filtros-container">
+    <button class="filtro-btn">
+    <i class="fas fa-filter filtro-icon"></i> Filtros
+  </button>
+
+  <div id="filtros-card" class="filtros-card oculto">
+    <select id="filtro-tipo" class="form-select">
+      <option value="">Tipo de prenda</option>
+      <option value="vestido">Vestido</option>
+      <option value="blusa">Blusa</option>
+      <option value="pantalon">Pantalón</option>
+      <option value="campera">Campera</option>
+      <option value="mono">Mono</option>
+      <option value="falda">Falda</option>
+      <option value="conjunto">Conjunto</option>
+      <option value="chaqueta">Chaqueta</option>
+      <option value="zapatos">Zapatos</option>
+    </select>
+
+    <select id="filtro-talle" class="form-select">
+      <option value="">Talle</option>
+      <option value="S">S</option>
+      <option value="M">M</option>
+      <option value="L">L</option>
+      <option value="XL">XL</option>
+      <option value="XXL">XXL</option>
+      <option value="38">38 zapatos</option>
+    </select>
+
+    <select id="filtro-precio" class="form-select">
+      <option value="">Ordenar por precio</option>
+      <option value="asc">Menor a mayor</option>
+      <option value="desc">Mayor a menor</option>
+    </select>
+  </div>
+</div>
+
+
+
+    <div class="grid-productos">
+      <div class="producto" data-tipo="blusa" data-talle="M" data-precio="21000" >
+        <a href="../productos/blusa-voladin.html">
+          <img src="../fotos/blusa-voladin-1.jpeg" alt="Blusa Voladin">
+          <h3>Blusa Voladin</h3>
+        </a>
+        <p>Hermosa, de gasa, impecable, tan linda!</p>
+        <span class="precio">$21.000</span>
+      </div>
+
+      <div class="producto" data-tipo="falda" data-talle="L" data-precio="22000">
+        <a href="../productos/falda-brillo.html">
+          <img src="../fotos/falda-brillo.jpeg" alt="Falda Brillo">
+          <h3>Falda Brillo</h3>
+        </a>
+        <p>De Cuesta Blanca, forrada, bordado en el ruedo, super chic!</p>
+        <span class="precio">$22.000</span>
+      </div>
+
+      <div class="producto" data-tipo="vestido" data-talle="XL" data-precio="15000">
+        <a href="../productos/vestido-primavera.html">
+          <img src="../fotos/vestido-primavera.jpeg" alt="Vestido Primavera">
+          <h3>Vestido Primavera</h3>
+        </a>
+        <p>De fibrana, hermoso!</p>
+        <span class="precio">$15.000</span>
+      </div>
+
+      <div class="producto" data-tipo="vestido" data-talle="M,L" data-precio="25000">
+        <a href="../productos/vestido-mariposa.html">
+          <img src="../fotos/vestido-mariposa.jpeg" alt="Vestido Mariposa">
+          <h3>Vestido Mariposa</h3>
+        </a>
+        <p>De seda, importado, talle M/L, versátil</p>
+        <span class="precio">$25.000</span>
+      </div>
+
+      <div class="producto" data-tipo="vestido" data-talle="S,M" data-precio="23000">
+        <a href="../productos/vestido-libre.html">
+          <img src="../fotos/vestido-libre.jpeg" alt="Vestido Libre">
+          <h3>Vestido Libre</h3>
+        </a>
+        <p>Solero de encaje, forrado, con bordado en el frente, talle S/M</p>
+        <span class="precio">$23.000</span>
+      </div>
+
+      <div class="producto" data-tipo="vestido" data-talle="L, XL" data-precio="18000">
+        <a href="../productos/vestido-esperanza.html">
+          <img src="../fotos/vestido-esperanza.jpeg" alt="Vestido Esperanza">
+          <h3>Vestido Esperanza</h3>
+        </a>
+        <p>De Bambula, verde con tajos en las mangas, elástico en la cintura, precioso! Talle L/XL</p>
+        <span class="precio">$18.000</span>
+      </div>
+
+      <div class="producto" data-tipo="vestido" data-talle="S" data-precio="19000">
+        <a href="../productos/vestido-cielo.html">
+          <img src="../fotos/vestido-cielo.jpeg" alt="Vestido Cielo">
+          <h3>Vestido Cielo</h3>
+        </a>
+        <p>Marca Inédita, nuevo, floreado de fibrana de seda, precioso! </p>
+        <span class="precio">$19.000</span>
+      </div>
+
+      <div class="producto" data-tipo="vestido" data-talle="S,M" data-precio="18000">
+        <a href="../productos/vestido-fuego.html">
+          <img src="../fotos/vestido-fuego.jpeg" alt="Vestido Fuego">
+          <h3>Vestido Fuego</h3>
+        </a>
+        <p>De crepe, sin mangas, con breteles, delicado, corto arriba de la rodilla, hermoso, talle S/M </p>
+        <span class="precio">$18.000</span>
+      </div>
+
+      <div class="producto" data-tipo="campera" data-talle="M,L" data-precio="18000" >
+        <a href="../productos/blusa-jean.html" >
+          <img src="../fotos/blusa-jean.jpeg" alt="blusa jean">
+          <h3>Blusa Jean</h3>
+        </a>
+        <p>Divina, con voladitos y botones, sin mangas, talle M/L </p>
+        <span class="precio">$18.000</span>
+      </div>
+
+      <div class="producto" data-tipo="blusa" data-talle="L, XL" data-precio="35000">
+        <a href="../productos/blusa-amalfi.html">
+          <img src="../fotos/blusa-amalfi.jpeg" alt="blusa amalfi">
+          <h3>Blusa Amalfi</h3>
+        </a>
+        <p>Italiana, cuadrille azul y blanco, mangas fruncidas, son las protagonistas! Tan bella que la vas a amar! </p>
+        <span class="precio">$35.000</span>
+      </div>
+
+      <div class="producto" data-tipo="vestido" data-talle="L, XL" data-precio="22000">
+        <a href="../productos/vestido-nube.html">
+          <img src="../fotos/vestido-nube.jpeg" alt="vestido nube">
+          <h3>Vestido Nube</h3>
+        </a>
+        <p>De Broderie elastizado, cómodo y elegante! </p>
+        <span class="precio">$22.000</span>
+      </div>
+
+      <div class="producto" data-tipo="mono" data-talle="L" data-precio="22000">
+        <a href="../productos/mono-taxi.html">
+          <img src="../fotos/mono-taxi.jpeg" alt="mono taxi">
+          <h3>Mono Taxi</h3>
+        </a>
+        <p>De crepe, divino! </p>
+        <span class="precio">$22.000</span>
+      </div>
+
+      <div class="producto" data-tipo="mono" data-talle="XL" data-precio="29000">
+        <a href="../productos/mono-leopardo.html">
+          <img src="../fotos/mono-leopardo.jpeg" alt="mono leopardo">
+          <h3>Mono leopardo</h3>
+        </a>
+        <p>Hermoso! Elastizado, con lazo, cierre al frente para poner y quitar facil! </p>
+        <span class="precio">$29.000</span>
+      </div>
+
+      <div class="producto" data-tipo="vestido" data-talle="M" data-precio="19000">
+        <a href="../productos/vestido-argentina.html">
+          <img src="../fotos/vestido-argentina.jpeg" alt="vestido argentina">
+          <h3>Vestido Argentina</h3>
+        </a>
+        <p>De rayón, divino, cortito, súper versátil porque lo podés usar como vestido o sobre un pantalón! </p>
+        <span class="precio">$19.000</span>
+      </div>
+
+      <div class="producto" data-tipo="pantalon" data-talle="L" data-precio="22000">
+        <a href="../productos/pantalon-oficina.html">
+          <img src="../fotos/pantalon-oficina.jpeg" alt="pantalon oficina">
+          <h3>Pantalón Oficina</h3>
+        </a>
+        <p>Calvin Klein, gris clarito con rayas finas azuladas, talle 42, semi elastizado, muy lindo, nuevo!</p>
+        <span class="precio">$22.000</span>
+      </div>
+
+      <div class="producto"  data-tipo="vestido" data-talle="L, XL" data-precio="22000">
+        <a href="../productos/vestido-black.html">
+          <img src="../fotos/vestido-black.jpeg" alt="vestido black">
+          <h3>Vestido Black</h3>
+        </a>
+        <p>De gasa forrado, bordado, corto, con vuelito en la falda, muy cómodo!</p>
+        <span class="precio">$22.000</span>
+      </div>
+
+      <div class="producto" data-tipo="vestido" data-talle="L, XL" data-precio="25000">
+        <a href="../productos/vestido-india.html">
+          <img src="../fotos/vestido-india.jpeg" alt="vestido india">
+          <h3>Vestido India</h3>
+        </a>
+        <p>De seda, importado, a la rodilla, colores preciosos!</p>
+        <span class="precio">$25.000</span>
+      </div>
+
+      <div class="producto"  data-tipo="vestido" data-talle="L" data-precio="21000">
+        <a href="../productos/vestido-milan.html">
+          <img src="../fotos/vestido-milan.jpeg" alt="vestido milan">
+          <h3>Vestido Milan</h3>
+        </a>
+        <p>Marca Inédita, super suave, con aplique de bordado al frente, colores tierra!</p>
+        <span class="precio">$21.000</span>
+      </div>
+
+      <div class="producto"  data-tipo="chaqueta" data-talle="L, XL" data-precio="30000">
+        <a href="../productos/chaqueta-disco.html">
+          <img src="../fotos/chaqueta-disco.jpeg" alt="chaqueta disco">
+          <h3>Chaqueta Disco</h3>
+        </a>
+        <p>Super elegante, tejida en telar con finos hilos de plata, talle L/XL, versátil.</p>
+        <span class="precio">$30.000</span>
+      </div>
+
+      <div class="producto"  data-tipo="vestido" data-talle="M, L, XL" data-precio="19000">
+        <a href="../productos/vestido-70.html">
+          <img src="../fotos/vestido-70.jpeg" alt="vestido 70">
+          <h3>Vestido setenta</h3>
+        </a>
+        <p>Corte bajo el busto, escote desbocado, versátil! De seda fría (cede!), negro y estampado, no te lo podés perder!</p>
+        <span class="precio">$19.000</span>
+      </div>
+
+      <div class="producto"  data-tipo="vestido" data-talle="M, L, XL" data-precio="26000">
+        <a href="../productos/vestido-coco.html">
+          <img src="../fotos/vestido-coco.jpeg" alt="vestido coco">
+          <h3>Vestido Coco</h3>
+        </a>
+        <p>Es lo más lindo que vas a vestir! Suave hilo de seda, artesanal, con terminaciones al crochet, talle versátil!</p>
+        <span class="precio">$26.000</span>
+      </div>
+
+      <div class="producto"  data-tipo="campera" data-talle="L, XL" data-precio="26000">
+        <a href="../productos/campera-letras.html">
+          <img src="../fotos/campera-letras.jpeg" alt="campera letras">
+          <h3>Campera Letras</h3>
+        </a>
+        <p>De jean blanco, re canchera! Cortita!</p>
+        <span class="precio">$26.000</span>
+      </div>
+
+      <div class="producto"  data-tipo="conjunto" data-talle="L" data-precio="24000">
+        <a href="../productos/conjunto-esmeralda.html">
+          <img src="../fotos/conjunto-esmeralda.jpeg" alt="conjunto esmeralda">
+          <h3>Conjunto Esmeralda</h3>
+        </a>
+        <p>Verde, de crepe elastizado, divino! Podés usarlo en conjunto o separado!</p>
+        <span class="precio">$24.000</span>
+      </div>
+
+      <div class="producto"  data-tipo="vestido" data-talle="XL, XXL" data-precio="23000">
+        <a href="../productos/vestido-verdun.html">
+          <img src="../fotos/vestido-verdun.jpeg" alt="vestido verdun">
+          <h3>Vestido Verdún</h3>
+        </a>
+        <p>Es muy lindo! De lino elastizado, largo abajo de la rodilla con un volado, podés usarlo suelto o con cinturón marcando tu cintura!</p>
+        <span class="precio">$23.000</span>
+      </div>
+
+      <div class="producto"  data-tipo="vestido" data-talle="L, XL" data-precio="24000">
+        <a href="../productos/vestido-alegria.html">
+          <img src="../fotos/vestido-alegria.jpeg" alt="vestido alegria">
+          <h3>Vestido Alegría</h3>
+        </a>
+        <p>Largo, de fibrana, amplio, con volados, ideal para sentirte fresca y libre!</p>
+        <span class="precio">$24.000</span>
+      </div>
+
+      <div class="producto"  data-tipo="vestido" data-talle="L, XL" data-precio="27000">
+        <a href="../productos/vestido-maravilla.html">
+          <img src="../fotos/vestido-maravilla.jpeg" alt="vestido maravilla">
+          <h3>Vestido Maravilla</h3>
+        </a>
+        <p>Largo, elegante, de modal elastizado, con lazo y elástico en la cintura, importado Primark.</p>
+        <span class="precio">$27.000</span>
+      </div>
+
+      <div class="producto"  data-tipo="vestido" data-talle="XL, XXL" data-precio="25000">
+        <a href="../productos/vestido-rayita.html">
+          <img src="../fotos/vestido-rayita.jpeg" alt="vestido rayita">
+          <h3>Vestido Rayita</h3>
+        </a>
+        <p>Largo, de fibrana, precioso! Importado, una calidad exquisita!</p>
+        <span class="precio">$25.000</span>
+      </div>
+
+      <div class="producto"  data-tipo="vestido" data-talle="M" data-precio="27000">
+        <a href="../productos/vestido-volador.html">
+          <img src="../fotos/vestido-volador.jpeg" alt="vestido Volador">
+          <h3>Vestido Volador</h3>
+        </a>
+        <p>Es una joyita! A cuadros delicados, con mangas abullonadas, largo arriba de la rodilla, la tela es de telar con seda, suave y elegante.</p>
+        <span class="precio">$27.000</span>
+      </div>
+
+      <div class="producto"  data-tipo="vestido" data-talle="L, XL" data-precio="27000">
+        <a href="../productos/vestido-tricolores.html">
+          <img src="../fotos/vestido-tricolores.jpeg" alt="vestido tricolores">
+          <h3>Vestido Tricolores</h3>
+        </a>
+        <p>Muy lindo! Importado, plisado, de gasa forrado, una joyita! </p>
+        <span class="precio">$27.000</span>
+      </div>
+
+      <div class="producto"  data-tipo="blusa" data-talle="XL" data-precio="24000">
+        <a href="../productos/blusa-mandarina.html">
+          <img src="../fotos/blusa-mandarina.jpeg" alt="blusa-mandarina">
+          <h3>Blusa Mandarina</h3>
+        </a>
+        <p>De Broderie de algodón, elegante y muy linda! Mangas abullonadas con cinta en el puño para ajustar según desees! </p>
+        <span class="precio">$24.000</span>
+      </div>
+
+      <div class="producto" data-tipo="blusa" data-talle="L" data-precio="23000">
+        <a href="../productos/blusa-fresa.html">
+          <img src="../fotos/blusa-fresa.jpeg" alt="blusa fresa">
+          <h3>Blusa Fresa</h3>
+        </a>
+        <p>Zara, mangas campana, de crepe color fresa subido, super elegante! </p>
+        <span class="precio">$23.000</span>
+      </div>
+
+      <div class="producto"  data-tipo="blusa" data-talle="L, XL" data-precio="19000">
+        <a href="../productos/blusa-fuego.html">
+          <img src="../fotos/blusa-fuego.jpeg" alt="blusa fuego">
+          <h3>Blusa Fuego</h3>
+        </a>
+        <p>De crepe, elegante y tan linda! </p>
+        <span class="precio">$19.000</span>
+      </div>
+
+      <div class="producto"  data-tipo="blusa" data-talle="L" data-precio="32000">
+        <a href="../productos/blusa-jackie.html">
+          <img src="../fotos/blusa-jackie.jpeg" alt="blusa jackie">
+          <h3>Blusa Jackie</h3>
+        </a>
+        <p>Estilo Jackie, de Zara, con perlones en el hombro, un modelito encantador, mangas largas, tela pesadita.</p>
+        <span class="precio">$32.000</span>
+      </div>
+
+      <div class="producto"  data-tipo="blusa" data-talle="XL" data-precio="29000">
+        <a href="../productos/blusa-bamboo.html">
+          <img src="../fotos/blusa-bamboo.jpeg" alt="blusa bamboo">
+          <h3>Blusa Bamboo</h3>
+        </a>
+        <p>Elegante, de seda Zara, bordado adelante y atrás.</p>
+        <span class="precio">$29.000</span>
+      </div>
+    
+      <div class="producto"  data-tipo="blusa" data-talle="L" data-precio="24000">
+        <a href="../productos/blusa-lunar.html">
+          <img src="../fotos/blusa-lunar.jpeg" alt="blusa lunar">
+          <h3>Blusa Lunar</h3>
+        </a>
+        <p>De seda, con voladitos al frente, hermosa!</p>
+        <span class="precio">$24.000</span>
+      </div>
+
+      <div class="producto"  data-tipo="blusa" data-talle="L" data-precio="23000">
+        <a href="../productos/blusa-geometric.html">
+          <img src="../fotos/blusa-geometric.jpeg" alt="blusa geometric">
+          <h3>Blusa Geometric</h3>
+        </a>
+        <p>De seda, geométrica, colores brillantes!</p>
+        <span class="precio">$23.000</span>
+      </div>
+
+      <div class="producto" data-tipo="blusa" data-talle="XL" data-precio="23000">
+        <a href="../productos/blusa-flores.html">
+          <img src="../fotos/blusa-flores.jpeg" alt="blusa flores">
+          <h3>Blusa Flores</h3>
+        </a>
+        <p>De Cuesta Blanca, crepe de seda, mangas campana, super elegante!</p>
+        <span class="precio">$23.000</span>
+      </div>
+
+      <div class="producto"  data-tipo="blusa" data-talle="L" data-precio="22000">
+        <a href="../productos/blusa-norma.html">
+          <img src="../fotos/blusa-norma.jpeg" alt="blusa norma">
+          <h3>Blusa Norma</h3>
+        </a>
+        <p>Es hermosa! De crepe, Cuesta Blanca!</p>
+        <span class="precio">$22.000</span>
+      </div>
+
+      <div class="producto"  data-tipo="blusa" data-talle="L" data-precio="23000">
+        <a href="../productos/blusa-mitad.html">
+          <img src="../fotos/blusa-mitad.jpeg" alt="blusa mitad">
+          <h3>Blusa Mitad</h3>
+        </a>
+        <p>De crepe de seda, super elegante, mitad blanca y mitad negra, muy cool!</p>
+        <span class="precio">$23.000</span>
+      </div>
+
+      <div class="producto"  data-tipo="vestido" data-talle="L, XL" data-precio="29000">
+        <a href="../productos/vestido-selva.html">
+          <img src="../fotos/vestido-selva.jpeg" alt="vestido selva">
+          <h3>Vestido Selva</h3>
+        </a>
+        <p>De Cuesta Blanca, crepe de seda forrado, largo, con tajos en el lateral, cintura elastizada, una belleza!</p>
+        <span class="precio">$29.000</span>
+      </div>
+
+      <div class="producto"  data-tipo="vestido" data-talle="L" data-precio="40000">
+        <a href="../productos/vestido-lentejuelas.html">
+          <img src="../fotos/vestido-lentejuelas.jpeg" alt="vestido Lentejuelas">
+          <h3>Vestido Lentejuelas</h3>
+        </a>
+        <p>Negro, de Cuesta Blanca, súper lindo, arriba de la rodilla, forrado, breteles finos.</p>
+        <span class="precio">$40.000</span>
+      </div>
+
+      <div class="producto" data-tipo="vestido" data-talle="L, XL" data-precio="29000">
+        <a href="../productos/vestido-ny.html">
+          <img src="../fotos/vestido-ny.jpeg" alt="vestido ny">
+          <h3>Vestido NY</h3>
+        </a>
+        <p>De lentejuelas color fucsia, cortito, corte A, versátil.</p>
+        <span class="precio">$29.000</span>
+      </div>
+
+      <div class="producto"  data-tipo="zapatos" data-talle="38" data-precio="38000">
+        <a href="../productos/texanas-snake.html">
+          <img src="../fotos/texanas-snake.jpeg" alt="texanas snake">
+          <h3>Texanas snake</h3>
+        </a>
+        <p>Cortitas talle 38, impecables!</p>
+        <span class="precio">$38.000</span>
+      </div>
+
+     
+
+    </div>
+  </section>
+
+  <section id="tejidos">
+    <h2>Tejidos Artesanales por pedido</h2>
+    <div class="grid-productos">
+      <div class="producto">
+        <a href="../tejidos/vestido-cancun.html">
+          <img src="../fotos/vestido-cancun.jpeg" alt="vestido cancun">
+          <h3>Vestido Cancun</h3>
+        </a>
+        <p>Tejido artesanalmente, de hilo de algodón combinado.</p>
+        <span class="precio">$39.000</span>
+      </div>
+
+      
+
+    </div>
+  </section>
+
+<div style="max-width: 700px; margin: 40px auto; background-color: #F5EBDD; color: #29899b; padding: 20px 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; font-family: PlayfairDisplay, sans-serif;">
+  <h3 style="margin: 0;">📦 Hacemos envios a todo el país por Correo Argentino</h3>
+</div>
+
+
+
+  <!-- CONTACTO -->
+  <section id="contacto">
+    <h2>Contacto</h2>
+    <p>Consultas al Whatsapp</p>
+    <a href="https://wa.me/2233393119" target="_blank">COMPRA ACÁ</a>
+  </section>
+
+<footer style="text-align:center; padding: 20px; background-color: #29899b; color: #F5EBDD; font-family: Arial, sans-serif;">
+  <p style="margin:0;">&copy; 2025 Trend Mdq</p>
+  <div style="margin-top:10px; display: flex; justify-content: center; align-items: center; gap: 25px;">
+    
+    <!-- Instagram -->
+    <a href="https://www.instagram.com/trendmdq/" target="_blank" rel="noopener noreferrer" style="color:#F5EBDD; font-size: 24px; text-decoration:none;">
+      <i class="fab fa-instagram" aria-hidden="true"></i><span class="sr-only">Instagram</span>
+    </a>
+    
+    <!-- Ubicación sin link -->
+    <div style="color:#F5EBDD; display: inline-flex; align-items: center; font-size: 18px;">
+      <i class="fas fa-map-marker-alt" aria-hidden="true" style="font-size: 22px; margin-right: 6px;"></i>
+      <span>Mar del Plata</span>
+    </div>
+    
+  </div>
+</footer>
+
+
+
+  <!-- Swiper JS -->
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+  <script>
+    const swiper = new Swiper('.mySwiper', {
+      loop: true,
+      slidesPerView: 2, // valor por defecto (mobile primero)
+      spaceBetween: 20,
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+      autoplay: {
+        delay: 3000,
+        disableOnInteraction: false,
+      },
+      autoHeight: true,
+      breakpoints: {
+        480: { slidesPerView: 2 },
+        768: { slidesPerView: 3 },
+        1024: { slidesPerView: 4 },
+      }
+    });
+  </script>
+
+
+<!-- Bootstrap JS + Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  const filtroTipo = document.getElementById("filtro-tipo");
+  const filtroTalle = document.getElementById("filtro-talle");
+  const filtroPrecio = document.getElementById("filtro-precio");
+  const contenedorProductos = document.querySelector(".grid-productos");
+  const productos = Array.from(document.querySelectorAll(".producto"));
+
+  function filtrarYOrdenar() {
+    const tipo = filtroTipo.value;
+    const talle = filtroTalle.value;
+    const orden = filtroPrecio.value;
+
+    let productosFiltrados = productos.filter(prod => {
+      const tipoProd = prod.dataset.tipo;
+      const talleProd = prod.dataset.talle;
+      return (
+      (!tipo || tipoProd === tipo) &&
+      (!talle || (talleProd && talleProd.split(",").map(t => t.trim()).includes(talle)))
+    );
+    });
+
+    if (orden) {
+      productosFiltrados.sort((a, b) => {
+        const precioA = parseInt(a.dataset.precio);
+        const precioB = parseInt(b.dataset.precio);
+        return orden === "asc" ? precioA - precioB : precioB - precioA;
+      });
+    }
+
+    // Limpiar contenedor y volver a agregar productos ordenados
+    contenedorProductos.innerHTML = "";
+    productosFiltrados.forEach(p => contenedorProductos.appendChild(p));
+
+    // Si no hay filtros, mostrar todos
+    if (!tipo && !talle && !orden) {
+      productos.forEach(p => contenedorProductos.appendChild(p));
+    }
+  }
+
+  filtroTipo.addEventListener("change", filtrarYOrdenar);
+  filtroTalle.addEventListener("change", filtrarYOrdenar);
+  filtroPrecio.addEventListener("change", filtrarYOrdenar);
+</script>
+
+<script>
+
+  const filtroBtn = document.querySelector('.filtro-btn');
+  const filtrosCard = document.querySelector('.filtros-card');
+
+  filtroBtn.addEventListener('click', () => {
+    filtrosCard.classList.toggle('active');
+  });
+
+
+  // Cerrar al hacer clic fuera
+  document.addEventListener('click', (e) => {
+    if (!filtrosCard.contains(e.target) && !toggleBtn.contains(e.target)) {
+      filtrosCard.classList.add('oculto');
+    }
+  });
+</script>
+
+
+
+</body>
+</html>
