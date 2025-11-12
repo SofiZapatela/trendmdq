@@ -1,12 +1,14 @@
 backend:
-    name: github
-    repo: SofiZapatela/trendmdq
-    branch: main
-    base_url: https://trendmdq.vercel.app/api
-    auth_endpoint: auth
+  name: github
+  repo: SofiZapatela/trendmdq
+  branch: main
+  base_url: "https://trendmdq.vercel.app"
+  auth_endpoint: "api/auth"
 
 media_folder: "fotos"
 public_folder: "/fotos"
+
+publish_mode: simple
 
 collections:
   - name: "productos"
@@ -14,6 +16,8 @@ collections:
     folder: "productos"
     create: true
     slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
     fields:
       - { label: "Nombre", name: "nombre", widget: "string" }
       - { label: "Precio", name: "precio", widget: "string" }
