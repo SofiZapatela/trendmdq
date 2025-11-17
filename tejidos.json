@@ -1,0 +1,12 @@
+[
+  {
+    "titulo": "Vestido Cancun",
+    "desc": "Tejido artesanalmente, de hilo de algodón combinado.",
+    "precio": 39000,
+    "img": "fotos/vestido-cancun.jpeg",
+    "href": "../tejidos/vestido-cancun.html",
+    "slug": "vestido-cancun",
+    "tipo": null,
+    "talle": null
+  }
+]

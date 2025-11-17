@@ -1,37 +1,181 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Trend MDQ CMS</title>
-  </head>
-  <body>
-    <script>
-      // --- 1️⃣ Interceptar el token del hash si existe ---
-      const hash = window.location.hash;
-      if (hash && hash.includes('access_token=')) {
-        const token = hash.split('access_token=')[1].split('&')[0];
-        if (token) {
-          console.log("Access token detectado:", token);
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Trend CMS</title>
 
-          // --- 2️⃣ Guardar el token en el formato que Decap espera ---
-          const user = {
-            backendName: 'github',
-            login: 'github',
-            token: token,
-          };
-          localStorage.setItem('netlify-cms-user', JSON.stringify(user));
+  <!-- Firebase (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
 
-          // --- 3️⃣ Limpiar el hash y recargar sin él ---
-          window.location.hash = '';
-          window.location.reload();
-        }
-      } else {
-        // --- 4️⃣ Mostrar info de depuración ---
-        console.log("No se detectó token en la URL. Decap se iniciará normalmente.");
-      }
-    </script>
+  <style>
+    body { font-family: Arial; max-width: 600px; margin: 20px auto; }
+    .hidden { display: none; }
+    .producto { border: 1px solid #ddd; padding: 10px; margin: 10px 0; }
+    input, textarea, select { width: 100%; padding: 8px; margin: 5px 0; }
+    button { padding: 10px; cursor: pointer; }
+  </style>
+</head>
 
-    <!-- --- 5️⃣ Cargar Decap CMS --- -->
-    <script src="https://unpkg.com/decap-cms@3.0.0/dist/decap-cms.js"></script>
-  </body>
+<body>
+
+  <h1>Trend CMS</h1>
+
+  <!-- LOGIN -->
+  <div id="login">
+    <h2>Iniciar sesión</h2>
+    <input id="email" type="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Contraseña" />
+    <button id="btnLogin">Ingresar</button>
+    <p id="loginError" style="color:red;"></p>
+  </div>
+
+  <!-- PANEL -->
+  <div id="panel" class="hidden">
+    <h2>Nuevo producto</h2>
+
+    <select id="categoria">
+      <option value="productos">Productos</option>
+      <option value="tejidos">Tejidos</option>
+    </select>
+
+    <input id="nombre" type="text" placeholder="Nombre del producto" />
+    <textarea id="descripcion" placeholder="Descripción"></textarea>
+    <input id="talle" type="text" placeholder="Talle (ej: S, M, L, XL)" />
+    <input id="precio" type="number" placeholder="Precio" />
+    <input id="imagen" type="text" placeholder="URL de la imagen" />
+
+    <button id="btnGuardar">Guardar producto</button>
+
+    <h2>Productos cargados</h2>
+    <div id="lista"></div>
+  </div>
+
+<script>
+  /* --- 1) CONFIG FIREBASE --- */
+  const firebaseConfig = {
+    apiKey: "AIzaSyAMYXqevFiswKZVICllkDVq2ymj6EgBn6I",
+    authDomain: "trendmdq-4e495.firebaseapp.com",
+    projectId: "trendmdq-4e495",
+    storageBucket: "trendmdq-4e495.appspot.com",
+    messagingSenderId: "866820424354",
+    appId: "1:866820424354:web:548df9c9c21a881a354dfb"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  const storage = firebase.storage();
+
+  /* --- 2) LOGIN --- */
+  btnLogin.onclick = () => {
+    const emailVal = document.getElementById("email").value;
+    const passVal = document.getElementById("password").value;
+
+    auth.signInWithEmailAndPassword(emailVal, passVal)
+      .then(() => {
+        login.classList.add("hidden");
+        panel.classList.remove("hidden");
+        cargarProductos();
+      })
+      .catch(() => loginError.textContent = "Email o contraseña incorrectos");
+  };
+
+  /* --- 3) SUBIR IMAGEN --- */
+  async function subirImagen(file) {
+    const ref = storage.ref("productos/" + Date.now() + "-" + file.name);
+    await ref.put(file);
+    return await ref.getDownloadURL();
+  }
+
+  /* --- 4) GUARDAR PRODUCTO --- */
+  btnGuardar.onclick = async () => {
+  const nombreP = nombre.value;
+  const descripcionP = descripcion.value;
+  const precioP = Number(precio.value);
+  const categoriaP = categoria.value;
+  const urlImagen = imagen.value.trim();
+  const talleP = talle.value.trim().split(",").map(t => t.trim()).filter(t => t); // convierte en array
+
+  if (!nombreP || !descripcionP || !precioP || !urlImagen) {
+    return alert("Faltan datos");
+  }
+
+  const url = urlImagen;
+
+  // Crear slug automático
+  const slug = nombreP
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  await db.collection(categoriaP).doc(slug).set({
+    titulo: nombreP,
+    desc: descripcionP,
+    precio: precioP,
+    img: url,
+    href: `producto.html?slug=${slug}`,
+    slug: slug,
+    tipo: categoriaP,
+    talle: talleP,
+    creado: Date.now()
+  });
+
+  nombre.value = "";
+  descripcion.value = "";
+  precio.value = "";
+  categoria.value = "productos";
+  imagen.value = "";
+  talle.value = "";
+
+  cargarProductos();
+  };
+
+  /* --- 5) LISTAR PRODUCTOS --- */
+  async function cargarProductos() {
+    lista.innerHTML = "";
+
+    const categorias = ["productos", "tejidos"];
+    const baseURL = "https://trendmdq.vercel.app/";
+
+    for (let cat of categorias) {
+      const snap = await db.collection(cat).get();
+
+      snap.forEach(doc => {
+        const p = doc.data();
+
+        // Si el campo img o imagen no es una URL completa, le agregamos la baseURL
+        const imgSrc = (p.imagen || p.img || "");
+        const urlCompleta = imgSrc.startsWith("http") ? imgSrc : baseURL + imgSrc;
+
+        const div = document.createElement("div");
+        div.className = "producto";
+
+        div.innerHTML = `
+        <strong>${cat.toUpperCase()}</strong>
+        <h3>${p.nombre || p.titulo || ""}</h3>
+        <img src="${urlCompleta}" width="150" />
+        <p>${p.descripcion || p.desc || ""}</p>
+        <p><strong>$${p.precio || ""}</strong></p>
+        <p><strong>Talles:</strong> ${(p.talle || []).join(", ")}</p>
+        <button onclick="borrar('${cat}', '${doc.id}')">Borrar</button>
+      `;
+
+        lista.appendChild(div);
+      });
+    }
+  }
+
+  /* --- 6) BORRAR PRODUCTO --- */
+  window.borrar = async (cat, id) => {
+    await db.collection(cat).doc(id).delete();
+    cargarProductos();
+  };
+</script>
+
+</body>
 </html>
