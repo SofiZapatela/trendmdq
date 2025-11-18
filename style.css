@@ -394,6 +394,11 @@ nav a:hover {
   border-color: #29899b;
 }
 
+.producto a {
+  text-decoration: none;
+  color: inherit;
+}
+
 
 /* ---------- HERO ---------- */
     .hero-nosotros {
@@ -528,6 +533,7 @@ nav a:hover {
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   text-align: center;
+  text-decoration: none;
 }
 
 
@@ -576,12 +582,11 @@ nav a:hover {
   margin: 0 0 10px;
 }
 
-.producto p.precio {
+.producto p:last-child {
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
-  color: #29899b !important; 
+  color: #29899b !important;
 }
-
 
 
 /* ===== CONTACTO ===== */

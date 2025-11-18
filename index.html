@@ -117,6 +117,7 @@
         <option value="conjunto">Conjunto</option>
         <option value="chaqueta">Chaqueta</option>
         <option value="zapatos">Zapatos</option>
+        <option value="pollera">Pollera</option>
       </select>
 
       <select id="filtro-talle" class="form-select">
@@ -140,11 +141,12 @@
   <!-- Grid para productos -->
   <h2>Nuestros Productos</h2>
   <section id="productos" class="grid-productos"></section>
-
+  <div id="sentinel-productos"></div>
   <!-- Grid para tejidos -->
   <h2>Nuestros Tejidos</h2>
 
   <section id="tejidos" class="grid-productos" style="margin-top: 50px;"></section>
+  <div id="sentinel-tejidos"></div>
 </section>
 
 
@@ -273,7 +275,7 @@
         productoDiv.innerHTML = `
           <a href="${p.href || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
             <h3>${titulo}</h3>
-            <img src="${imgSrc}" width="150" />
+            <img src="${imgSrc}" width="150" loading="lazy" />
             <p>${descripcion}</p>
             <p><strong>$${p.precio || ""}</strong></p>
           </a>
@@ -356,6 +358,8 @@
   };
 
   firebase.initializeApp(firebaseConfig);
+
+  /* 🔥 MOVER ESTO AQUÍ ARRIBA — antes del DOMContentLoaded */
   const db = firebase.firestore();
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -363,131 +367,130 @@
     const filtroTalle = document.getElementById("filtro-talle");
     const filtroPrecio = document.getElementById("filtro-precio");
 
-    const contenedorProductos = document.getElementById("productos");
-    const contenedorTejidos = document.getElementById("tejidos");
+    const contProductos = document.getElementById("productos");
+    const contTejidos = document.getElementById("tejidos");
 
-    let productosArray = [];
-    let tejidosArray = [];
+    /* 🔥 Asegurate de tenerlos en tu HTML */
+    const sentinelProductos = document.getElementById("sentinel-productos");
+    const sentinelTejidos = document.getElementById("sentinel-tejidos");
+
+    const ITEMS_POR_CARGA = 10;
+    let todosProductos = [];
+    let todosTejidos = [];
+    let filtradosProductos = [];
+    let filtradosTejidos = [];
+    let offsetProductos = 0;
+    let offsetTejidos = 0;
 
     async function cargarProductos() {
       const baseURL = "https://trendmdq.vercel.app/";
-      const categorias = ["productos", "tejidos"];
 
-      contenedorProductos.innerHTML = "";
-      contenedorTejidos.innerHTML = "";
-      productosArray = [];
-      tejidosArray = [];
+      todosProductos = [];
+      todosTejidos = [];
+
+      const categorias = ["productos", "tejidos"];
 
       for (let cat of categorias) {
         const snap = await db.collection(cat).get();
 
         snap.forEach(doc => {
           const p = doc.data();
-
           let imgSrc = p.img || p.imagen || "";
 
-if (Array.isArray(imgSrc)) {
-  imgSrc = imgSrc.length > 0 ? imgSrc[0] : "";
-}
+          if (Array.isArray(imgSrc)) imgSrc = imgSrc[0] || "";
+          if (imgSrc && !imgSrc.startsWith("http")) imgSrc = baseURL + imgSrc;
 
-if (imgSrc && !imgSrc.startsWith("http")) {
-  imgSrc = baseURL + imgSrc;
-}
+          const div = document.createElement("div");
+          div.className = "producto";
+          div.dataset.tipo = p.tipo ? p.tipo.toLowerCase() : "";
+          div.dataset.talle = Array.isArray(p.talle) ? p.talle.map(t => t.toUpperCase()).join(",") : "";
+          div.dataset.precio = p.precio || "0";
 
-
-          const titulo = p.titulo || p.nombre || "";
-          const descripcion = p.desc || p.descripcion || "";
-
-          const productoDiv = document.createElement("div");
-          productoDiv.className = "producto";
-
-          // Asegurarnos que tipo y talle existen y coincidan con filtro
-          // tipo (ej: "blusa") y talle (ej: ["S","M"]) en array
-          productoDiv.dataset.tipo = p.tipo ? p.tipo.toLowerCase() : "";
-          productoDiv.dataset.talle = Array.isArray(p.talle) ? p.talle.map(t => t.toUpperCase()).join(",") : "";
-          productoDiv.dataset.precio = p.precio || "0";
-
-          productoDiv.innerHTML = `
-            <a href="${p.href || '#'}" rel="noopener noreferrer" style="text-decoration: none">
-              <img src="${imgSrc}" width="150" />
-              <h3>${titulo}</h3>
-              <p>${descripcion}</p>
-              <p class="precio"><strong>$${p.precio || ""}</strong></p>
+          div.innerHTML = `
+            <a href="${p.href || '#'}"  rel="noopener noreferrer" style="text-decoration: none">
+              <img src="${imgSrc}" width="150" loading="lazy" />
+              <h3>${p.titulo || p.nombre || ""}</h3>
+              <p>${p.desc || p.descripcion || ""}</p>
+              <p><strong>$${p.precio || ""}</strong></p>
             </a>
           `;
 
-          if (cat === "productos") {
-            contenedorProductos.appendChild(productoDiv);
-            productosArray.push(productoDiv);
-          } else if (cat === "tejidos") {
-            contenedorTejidos.appendChild(productoDiv);
-            tejidosArray.push(productoDiv);
-          }
+          if (cat === "productos") todosProductos.push(div);
+          else todosTejidos.push(div);
         });
       }
 
-      console.log("Productos cargados:", productosArray.length);
-      console.log("Tejidos cargados:", tejidosArray.length);
+      aplicarFiltros();
     }
 
-    function renderizarProductos(array, contenedor) {
-      contenedor.innerHTML = "";
-      array.forEach(p => contenedor.appendChild(p));
-    }
-
-    function filtrarYOrdenar() {
+    function aplicarFiltros() {
       const tipo = filtroTipo.value.toLowerCase();
       const talle = filtroTalle.value.toUpperCase();
       const orden = filtroPrecio.value;
 
-      console.log("Filtros seleccionados:", {tipo, talle, orden});
-
-      function filtrarArray(arr) {
-        return arr.filter(prod => {
-          const tipoProd = prod.dataset.tipo || "";
-          const talleProd = prod.dataset.talle || "";
-          // Para talle, chequeamos que el talle exista dentro del string (split y trim)
-          const talleIncluye = talle ? talleProd.split(",").map(t => t.trim()).includes(talle) : true;
-          const tipoCoincide = !tipo || tipoProd === tipo;
-
-          return tipoCoincide && talleIncluye;
+      function filtrar(arr) {
+        return arr.filter(p => {
+          const tipoOK = !tipo || p.dataset.tipo === tipo;
+          const talles = p.dataset.talle.split(",");
+          const talleOK = !talle || talles.includes(talle);
+          return tipoOK && talleOK;
         });
       }
 
-      function ordenarArray(arr) {
+      function ordenar(arr) {
         if (!orden) return arr;
         return arr.slice().sort((a, b) => {
-          const precioA = parseInt(a.dataset.precio) || 0;
-          const precioB = parseInt(b.dataset.precio) || 0;
-          return orden === "asc" ? precioA - precioB : precioB - precioA;
+          const A = parseInt(a.dataset.precio) || 0;
+          const B = parseInt(b.dataset.precio) || 0;
+          return orden === "asc" ? A - B : B - A;
         });
       }
 
-      let filtradosProductos = filtrarArray(productosArray);
-      let filtradosTejidos = filtrarArray(tejidosArray);
+      filtradosProductos = ordenar(filtrar(todosProductos));
+      filtradosTejidos = ordenar(filtrar(todosTejidos));
 
-      filtradosProductos = ordenarArray(filtradosProductos);
-      filtradosTejidos = ordenarArray(filtradosTejidos);
+      offsetProductos = 0;
+      offsetTejidos = 0;
 
-      renderizarProductos(filtradosProductos, contenedorProductos);
-      renderizarProductos(filtradosTejidos, contenedorTejidos);
+      contProductos.innerHTML = "";
+      contTejidos.innerHTML = "";
 
-      console.log("Productos filtrados:", filtradosProductos.length);
-      console.log("Tejidos filtrados:", filtradosTejidos.length);
+      cargarMas("productos");
+      cargarMas("tejidos");
     }
 
-    filtroTipo.addEventListener("change", filtrarYOrdenar);
-    filtroTalle.addEventListener("change", filtrarYOrdenar);
-    filtroPrecio.addEventListener("change", filtrarYOrdenar);
+    function cargarMas(tipo) {
+      if (tipo === "productos") {
+        const slice = filtradosProductos.slice(offsetProductos, offsetProductos + ITEMS_POR_CARGA);
+        slice.forEach(el => contProductos.appendChild(el));
+        offsetProductos += ITEMS_POR_CARGA;
+      } else {
+        const slice = filtradosTejidos.slice(offsetTejidos, offsetTejidos + ITEMS_POR_CARGA);
+        slice.forEach(el => contTejidos.appendChild(el));
+        offsetTejidos += ITEMS_POR_CARGA;
+      }
+    }
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          if (entry.target.id === "sentinel-productos") cargarMas("productos");
+          if (entry.target.id === "sentinel-tejidos") cargarMas("tejidos");
+        }
+      });
+    });
+
+    /* 🔥 ESTO SE ROMPÍA — ahora solo observa si existen */
+    if (sentinelProductos) observer.observe(sentinelProductos);
+    if (sentinelTejidos) observer.observe(sentinelTejidos);
+
+    filtroTipo.addEventListener("change", aplicarFiltros);
+    filtroTalle.addEventListener("change", aplicarFiltros);
+    filtroPrecio.addEventListener("change", aplicarFiltros);
 
     cargarProductos();
   });
 </script>
-
-
-
-
-
 
 </body>
 </html>
