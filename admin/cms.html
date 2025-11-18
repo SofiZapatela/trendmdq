@@ -45,7 +45,8 @@
     <textarea id="descripcion" placeholder="Descripción"></textarea>
     <input id="talle" type="text" placeholder="Talle (ej: S, M, L, XL)" />
     <input id="precio" type="number" placeholder="Precio" />
-    <input id="imagen" type="text" placeholder="URL de la imagen" />
+    <input type="file" id="imagen" multiple />
+
 
     <button id="btnGuardar">Guardar producto</button>
 
@@ -59,7 +60,7 @@
     apiKey: "AIzaSyAMYXqevFiswKZVICllkDVq2ymj6EgBn6I",
     authDomain: "trendmdq-4e495.firebaseapp.com",
     projectId: "trendmdq-4e495",
-    storageBucket: "trendmdq-4e495.appspot.com",
+    storageBucket: "trendmdq-4e495.firebasestorage.app",
     messagingSenderId: "866820424354",
     appId: "1:866820424354:web:548df9c9c21a881a354dfb"
   };
@@ -91,19 +92,25 @@
   }
 
   /* --- 4) GUARDAR PRODUCTO --- */
-  btnGuardar.onclick = async () => {
-  const nombreP = nombre.value;
-  const descripcionP = descripcion.value;
+ btnGuardar.onclick = async () => {
+  const nombreP = nombre.value.trim();
+  const descripcionP = descripcion.value.trim();
   const precioP = Number(precio.value);
   const categoriaP = categoria.value;
-  const urlImagen = imagen.value.trim();
-  const talleP = talle.value.trim().split(",").map(t => t.trim()).filter(t => t); // convierte en array
+  const tallesArr = talle.value.trim().split(",").map(t => t.trim()).filter(t => t);
 
-  if (!nombreP || !descripcionP || !precioP || !urlImagen) {
-    return alert("Faltan datos");
+  const files = imagen.files; // <--- ahora tomamos los archivos
+
+  if (!nombreP || !descripcionP || !precioP || files.length === 0) {
+    return alert("Faltan datos o no subiste imágenes");
   }
 
-  const url = urlImagen;
+  // Subimos todas las imágenes y guardamos las URLs en un array
+  let imagenesUrls = [];
+  for (let file of files) {
+    const url = await subirImagen(file);
+    imagenesUrls.push(url);
+  }
 
   // Crear slug automático
   const slug = nombreP
@@ -113,18 +120,22 @@
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
+  // Guardar en Firestore
   await db.collection(categoriaP).doc(slug).set({
     titulo: nombreP,
     desc: descripcionP,
     precio: precioP,
-    img: url,
+    img: imagenesUrls,         // <-- ahora es array real de URLs subidas
     href: `producto.html?slug=${slug}`,
     slug: slug,
     tipo: categoriaP,
-    talle: talleP,
+    talle: tallesArr,
     creado: Date.now()
+    
   });
+  alert("Producto cargado!")
 
+  // Limpiar campos
   nombre.value = "";
   descripcion.value = "";
   precio.value = "";
@@ -133,48 +144,64 @@
   talle.value = "";
 
   cargarProductos();
-  };
+};
+
+
 
   /* --- 5) LISTAR PRODUCTOS --- */
-  async function cargarProductos() {
-    lista.innerHTML = "";
+async function cargarProductos() {
+  lista.innerHTML = "";
 
-    const categorias = ["productos", "tejidos"];
-    const baseURL = "https://trendmdq.vercel.app/";
+  const categorias = ["productos", "tejidos"];
 
-    for (let cat of categorias) {
-      const snap = await db.collection(cat).get();
+  for (let cat of categorias) {
+    const snap = await db.collection(cat).get();
 
-      snap.forEach(doc => {
-        const p = doc.data();
+    snap.forEach(doc => {
+      const p = doc.data();
 
-        // Si el campo img o imagen no es una URL completa, le agregamos la baseURL
-        const imgSrc = (p.imagen || p.img || "");
-        const urlCompleta = imgSrc.startsWith("http") ? imgSrc : baseURL + imgSrc;
+      // Usar la URL directa que viene de Firebase
+      let urlCompleta = "";
+      if (Array.isArray(p.img) && p.img.length > 0) {
+        urlCompleta = p.img[0];
+      }
+      if (typeof p.img === "string") {
+        urlCompleta = p.img;
+      }
 
-        const div = document.createElement("div");
-        div.className = "producto";
+      const div = document.createElement("div");
+      div.className = "producto";
 
-        div.innerHTML = `
+      div.innerHTML = `
         <strong>${cat.toUpperCase()}</strong>
         <h3>${p.nombre || p.titulo || ""}</h3>
         <img src="${urlCompleta}" width="150" />
         <p>${p.descripcion || p.desc || ""}</p>
         <p><strong>$${p.precio || ""}</strong></p>
-        <p><strong>Talles:</strong> ${(p.talle || []).join(", ")}</p>
+        <p><strong>Talles: </strong>${Array.isArray(p.talle) ? p.talle.join(", ") : ""}</p>
         <button onclick="borrar('${cat}', '${doc.id}')">Borrar</button>
       `;
 
-        lista.appendChild(div);
-      });
-    }
+      lista.appendChild(div);
+    });
   }
+}
 
-  /* --- 6) BORRAR PRODUCTO --- */
-  window.borrar = async (cat, id) => {
-    await db.collection(cat).doc(id).delete();
-    cargarProductos();
-  };
+
+
+
+/* --- 6) BORRAR PRODUCTO --- */
+window.borrar = async (cat, id) => {
+  const seguro = confirm("¿Estás segura/o que querés borrar este producto? Esta acción no se puede deshacer.");
+
+  if (!seguro) return; // Si aprieta "Cancelar", NO borra nada.
+
+  await db.collection(cat).doc(id).delete();
+
+  alert("Producto eliminado exitosamente");
+  cargarProductos();
+};
+
 </script>
 
 </body>

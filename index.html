@@ -385,9 +385,15 @@
           const p = doc.data();
 
           let imgSrc = p.img || p.imagen || "";
-          if (imgSrc && !imgSrc.startsWith("http")) {
-            imgSrc = baseURL + imgSrc;
-          }
+
+if (Array.isArray(imgSrc)) {
+  imgSrc = imgSrc.length > 0 ? imgSrc[0] : "";
+}
+
+if (imgSrc && !imgSrc.startsWith("http")) {
+  imgSrc = baseURL + imgSrc;
+}
+
 
           const titulo = p.titulo || p.nombre || "";
           const descripcion = p.desc || p.descripcion || "";

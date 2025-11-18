@@ -376,6 +376,25 @@ nav a:hover {
 }
 
 
+.pequenas-container {
+  display: flex;
+  flex-wrap: nowrap; /* para que no se envuelvan */
+  gap: 8px; /* espacio entre miniaturas */
+}
+
+.pequenas-container img {
+  max-width: 100px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+.pequenas-container img.activa {
+  border-color: #29899b;
+}
+
+
 /* ---------- HERO ---------- */
     .hero-nosotros {
       position: relative;

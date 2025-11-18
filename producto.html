@@ -2,68 +2,282 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Detalle Producto</title>
-  <link rel="stylesheet" href="style.css" />
-  <!-- Tu CSS y recursos aquí -->
+
+  <link rel="icon" type="image/png" href="../fotos/logo claro.png" />
+  <link rel="stylesheet" href="../style.css" />
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- FontAwesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    crossorigin="anonymous"
+  />
 </head>
 <body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" id="logo-link" href="#">
+        <img id="logo" src="" alt="Logo Trend" style="max-height: 60px" />
+      </a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-  <div id="producto-detalle" style="max-width: 800px; margin: auto; padding: 20px;">
-    <h1 id="titulo"></h1>
-    <img id="imagen" src="" alt="" style="max-width: 100%; border-radius: 8px;" />
-    <p id="descripcion"></p>
-    <p><strong>Precio: $<span id="precio"></span></strong></p>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link active" href="#hero">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="#productos">Productos</a></li>
+          <li class="nav-item"><a class="nav-link" href="#tejidos">Tejidos</a></li>
+          <li class="nav-item"><a class="nav-link" href="../nosotros.html">Nosotros</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <script>
+    // Subcarpeta productos
+    const isSubfolder = true;
+
+    // Logo
+    document.getElementById("logo").src = "../fotos/logo.png";
+
+    // Links del menú que apuntan a secciones del index
+    const navLinks = document.querySelectorAll(".nav-link");
+    navLinks.forEach((link) => {
+      const href = link.getAttribute("href");
+      if (href.startsWith("#")) {
+        link.href = "../index.html" + href;
+      }
+    });
+
+    // Logo siempre apunta al inicio
+    document.getElementById("logo-link").href = "../index.html#hero";
+  </script>
+
+  <div class="detalle-producto container mt-5 d-flex flex-wrap gap-4">
+    <!-- Galería a la izquierda -->
+    <div class="galeria-container flex-grow-1" style="min-width: 300px; max-width: 500px;">
+      <div class="imagen-grande mb-3">
+        <img
+          id="imagenPrincipal"
+          src=""
+          alt="Imagen principal"
+          style="width: 100%; border-radius: 8px"
+        />
+      </div>
+
+      <div class="pequenas-container d-flex gap-2 flex-nowrap">
+        <!-- Miniaturas se cargan acá -->
+      </div>
+    </div>
+
+    <!-- Texto a la derecha -->
+    <div class="detalle-info flex-grow-1" style="min-width: 250px; max-width: 400px;">
+      <h2 id="titulo"></h2>
+      <p id="descripcion"></p>
+
+      <div class="precios">
+        <ul>
+          <li id="talles"></li>
+          <li>Precio: $<span id="precio"></span></li>
+        </ul>
+      </div>
+
+      <!-- CONTACTO -->
+      <section id="contacto" class="mt-4">
+        <h2>Contacto</h2>
+        <p>Consultas al Whatsapp</p>
+        <a href="https://wa.me/2233393119" target="_blank" class="btn btn-primary"
+          >COMPRA ACÁ</a
+        >
+      </section>
+    </div>
   </div>
+
+  <footer
+    style="
+      text-align: center;
+      padding: 20px;
+      background-color: #29899b;
+      color: #f5ebdd;
+      font-family: Arial, sans-serif;
+    "
+  >
+    <p style="margin: 0;">&copy; 2025 Trend Mdq</p>
+    <div
+      style="
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 25px;
+      "
+    >
+      <!-- Instagram -->
+      <a
+        href="https://www.instagram.com/trendmdq/"
+        target="_blank"
+        rel="noopener noreferrer"
+        style="color: #f5ebdd; font-size: 24px; text-decoration: none"
+      >
+        <i class="fab fa-instagram" aria-hidden="true"></i
+        ><span class="sr-only">Instagram</span>
+      </a>
+
+      <!-- Ubicación sin link -->
+      <div
+        style="
+          color: #f5ebdd;
+          display: inline-flex;
+          align-items: center;
+          font-size: 18px;
+        "
+      >
+        <i
+          class="fas fa-map-marker-alt"
+          aria-hidden="true"
+          style="font-size: 22px; margin-right: 6px"
+        ></i>
+        <span>Mar del Plata</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
   <script>
-    // Config Firebase (mismo que en CMS y index)
+    // Config Firebase (igual que en CMS e index)
     const firebaseConfig = {
       apiKey: "AIzaSyAMYXqevFiswKZVICllkDVq2ymj6EgBn6I",
       authDomain: "trendmdq-4e495.firebaseapp.com",
       projectId: "trendmdq-4e495",
-      storageBucket: "trendmdq-4e495.appspot.com",
+      storageBucket: "trendmdq-4e495.firebasestorage.app",
       messagingSenderId: "866820424354",
-      appId: "1:866820424354:web:548df9c9c21a881a354dfb"
+      appId: "1:866820424354:web:548df9c9c21a881a354dfb",
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Leer el slug de la URL (?slug=blusa-amalfi)
+    // Leer slug de URL
     const urlParams = new URLSearchParams(window.location.search);
-    const slug = urlParams.get('slug');
+    const slug = urlParams.get("slug");
 
     if (!slug) {
-      document.getElementById('producto-detalle').innerHTML = "<p>Producto no especificado</p>";
+      document.querySelector(".detalle-producto").innerHTML =
+        "<p>Producto no especificado</p>";
     } else {
-      // Primero buscar en 'productos'
-      db.collection('productos').doc(slug).get().then(doc => {
-        if (doc.exists) {
-          mostrarProducto(doc.data());
-        } else {
-          // Si no existe en productos, buscar en tejidos
-          db.collection('tejidos').doc(slug).get().then(doc2 => {
-            if (doc2.exists) {
-              mostrarProducto(doc2.data());
-            } else {
-              document.getElementById('producto-detalle').innerHTML = "<p>Producto no encontrado</p>";
-            }
-          });
-        }
-      });
-    }
+      // Buscar en productos
+      db.collection("productos")
+        .doc(slug)
+        .get()
+        .then((doc) => {
+          if (doc.exists) {
+            mostrarProducto(doc.data());
+          } else {
+            // Buscar en tejidos si no está en productos
+            db.collection("tejidos")
+              .doc(slug)
+              .get()
+              .then((doc2) => {
+                if (doc2.exists) {
+                  mostrarProducto(doc2.data());
+                } else {
+                  document.querySelector(".detalle-producto").innerHTML =
+                    "<p>Producto no encontrado</p>";
+                }
+              });
+          }
+        });
 
-    function mostrarProducto(p) {
-      document.getElementById('titulo').textContent = p.titulo || p.nombre || "";
-      document.getElementById('descripcion').textContent = p.desc || p.descripcion || "";
-      document.getElementById('precio').textContent = p.precio || "";
-      document.getElementById('imagen').src = p.img || p.imagen || "";
-      document.getElementById('imagen').alt = p.titulo || p.nombre || "Imagen producto";
+      function mostrarProducto(p) {
+        document.getElementById("titulo").textContent = p.titulo || "";
+        document.getElementById("descripcion").textContent = p.desc || "";
+        document.getElementById("precio").textContent = p.precio || "";
+        
+        // Talles
+        if (p.talle && p.talle.length > 0) {
+          document.getElementById("talles").textContent = "TALLE: " + p.talle.join(", ");
+        } else {
+          document.getElementById("talles").textContent = "";
+        }
+
+        // Fotos: si es array, si no, convertir a array para evitar errores
+        let imgs = [];
+        if (Array.isArray(p.img)) {
+          imgs = p.img;
+        } else if (typeof p.img === "string" && p.img.trim() !== "") {
+          imgs = [p.img];
+        }
+
+        const galeria = document.querySelector(".galeria-container");
+        const imagenPrincipal = document.getElementById("imagenPrincipal");
+        const pequenasContainer = document.querySelector(".pequenas-container");
+
+        if (imgs.length === 0) {
+          // No hay imágenes
+          imagenPrincipal.src = "";
+          pequenasContainer.innerHTML = "<p>No hay imágenes disponibles</p>";
+          return;
+        }
+
+        // Mostrar primera imagen como principal
+        imagenPrincipal.src = imgs[0];
+        imagenPrincipal.alt = p.titulo || "Imagen producto";
+
+        // Limpiar thumbnails
+        pequenasContainer.innerHTML = "";
+
+        // Crear thumbnails para las demás imágenes
+        imgs.forEach((url, i) => {
+          const img = document.createElement("img");
+          img.src = url;
+          img.alt = `${p.titulo || "Producto"} - Imagen ${i + 1}`;
+          img.style.cursor = "pointer";
+          img.style.maxWidth = "100px";
+          img.style.borderRadius = "5px";
+          img.onclick = () => {
+            // Cambiar imagen principal
+            imagenPrincipal.src = url;
+
+            // Remover clase activa de todas
+            pequenasContainer.querySelectorAll("img").forEach((img) => {
+              img.classList.remove("activa");
+            });
+
+            img.classList.add("activa");
+          };
+
+          // Marcar la primera thumbnail como activa
+          if (i === 0) {
+            img.classList.add("activa");
+            img.style.border = "2px solid #29899b";
+          } else {
+            img.style.border = "2px solid transparent";
+          }
+
+          pequenasContainer.appendChild(img);
+        });
+      }
     }
   </script>
-
 </body>
 </html>
