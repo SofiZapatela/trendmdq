@@ -180,34 +180,9 @@
 
     // Leer slug de URL
     const urlParams = new URLSearchParams(window.location.search);
-    const slug = urlParams.get("slug");
+    const slug = new URLSearchParams(window.location.search).get("slug");
+    const cacheKey = `producto_${slug}`;
 
-    if (!slug) {
-      document.querySelector(".detalle-producto").innerHTML =
-        "<p>Producto no especificado</p>";
-    } else {
-      // Buscar en productos
-      db.collection("productos")
-        .doc(slug)
-        .get()
-        .then((doc) => {
-          if (doc.exists) {
-            mostrarProducto(doc.data());
-          } else {
-            // Buscar en tejidos si no está en productos
-            db.collection("tejidos")
-              .doc(slug)
-              .get()
-              .then((doc2) => {
-                if (doc2.exists) {
-                  mostrarProducto(doc2.data());
-                } else {
-                  document.querySelector(".detalle-producto").innerHTML =
-                    "<p>Producto no encontrado</p>";
-                }
-              });
-          }
-        });
 
       function mostrarProducto(p) {
         document.getElementById("titulo").textContent = p.titulo || "";
@@ -278,7 +253,31 @@
           pequenasContainer.appendChild(img);
         });
       }
-    }
+
+      if (!slug) {
+        document.querySelector(".detalle-producto").innerHTML = "<p>Producto no especificado</p>";
+        } else {
+        const cacheData = localStorage.getItem(cacheKey);
+        if (cacheData) {
+            mostrarProducto(JSON.parse(cacheData));
+        } else {
+            Promise.all([
+            db.collection("productos").doc(slug).get(),
+            db.collection("tejidos").doc(slug).get()
+            ]).then(([docProd, docTej]) => {
+            if (docProd.exists) {
+                mostrarProducto(docProd.data());
+                localStorage.setItem(cacheKey, JSON.stringify(docProd.data()));
+            } else if (docTej.exists) {
+                mostrarProducto(docTej.data());
+                localStorage.setItem(cacheKey, JSON.stringify(docTej.data()));
+            } else {
+                document.querySelector(".detalle-producto").innerHTML = "<p>Producto no encontrado</p>";
+            }
+            });
+        }
+        }
+
   </script>
 </body>
 </html>

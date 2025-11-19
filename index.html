@@ -64,7 +64,7 @@
 
 <header class="hero">
   <div class="hero-overlay"></div>
-  <img src="fotos/fondo mar.png" alt="fondo mar" class="hero-bg">
+  <img src="fotos/fondo mar.webp" alt="fondo mar" class="hero-bg">
   <div class="hero-text">
     <img src="fotos/logo claro.png" alt="logo">
     <h1 class="brand">
@@ -208,137 +208,6 @@
     });
   </script>
 
-
-<!-- Bootstrap JS + Popper -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-  // Control mostrar/ocultar filtro
-  const filtroBtn = document.querySelector('.filtro-btn');
-  const filtrosCard = document.getElementById('filtros-card');
-
-  filtroBtn.addEventListener('click', () => {
-    filtrosCard.classList.toggle('active');
-    filtrosCard.classList.toggle('oculto');
-  });
-
-  // Opcional: cerrar filtros si clickeas afuera
-  document.addEventListener('click', (e) => {
-    if (!filtrosCard.contains(e.target) && !filtroBtn.contains(e.target)) {
-      filtrosCard.classList.add('oculto');
-      filtrosCard.classList.remove('active');
-    }
-  });
-
-  // El resto: filtro y carga de productos (como te pasé antes)
-
-  const filtroTipo = document.getElementById("filtro-tipo");
-  const filtroTalle = document.getElementById("filtro-talle");
-  const filtroPrecio = document.getElementById("filtro-precio");
-
-  const contenedorProductos = document.getElementById("productos");
-  const contenedorTejidos = document.getElementById("tejidos");
-
-  let productosArray = [];
-  let tejidosArray = [];
-
-  async function cargarProductos() {
-    const baseURL = "https://trendmdq.vercel.app/";
-    const categorias = ["productos", "tejidos"];
-
-    contenedorProductos.innerHTML = "";
-    contenedorTejidos.innerHTML = "";
-    productosArray = [];
-    tejidosArray = [];
-
-    for (let cat of categorias) {
-      const snap = await db.collection(cat).get();
-
-      snap.forEach((doc) => {
-        const p = doc.data();
-
-        let imgSrc = p.img || p.imagen || "";
-        if (imgSrc && !imgSrc.startsWith("http")) {
-          imgSrc = baseURL + imgSrc;
-        }
-
-        const titulo = p.titulo || p.nombre || "";
-        const descripcion = p.desc || p.descripcion || "";
-
-        const productoDiv = document.createElement("div");
-        productoDiv.className = "producto";
-
-        productoDiv.dataset.tipo = (p.tipo || "").toLowerCase();
-        productoDiv.dataset.talle = Array.isArray(p.talle) ? p.talle.map(t => t.toUpperCase()).join(",") : "";
-        productoDiv.dataset.precio = p.precio || "0";
-
-        productoDiv.innerHTML = `
-          <a href="${p.href || '#'}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
-            <h3>${titulo}</h3>
-            <img src="${imgSrc}" width="150" loading="lazy" />
-            <p>${descripcion}</p>
-            <p><strong>$${p.precio || ""}</strong></p>
-          </a>
-        `;
-
-        if (cat === "productos") {
-          contenedorProductos.appendChild(productoDiv);
-          productosArray.push(productoDiv);
-        } else if (cat === "tejidos") {
-          contenedorTejidos.appendChild(productoDiv);
-          tejidosArray.push(productoDiv);
-        }
-      });
-    }
-  }
-
-  function renderizarProductos(array, contenedor) {
-    contenedor.innerHTML = "";
-    array.forEach(p => contenedor.appendChild(p));
-  }
-
-  function filtrarYOrdenar() {
-    const tipo = filtroTipo.value.toLowerCase();
-    const talle = filtroTalle.value.toUpperCase();
-    const orden = filtroPrecio.value;
-
-    function filtrarArray(arr) {
-      return arr.filter(prod => {
-        const tipoProd = prod.dataset.tipo || "";
-        const talleProd = prod.dataset.talle || "";
-        const talleIncluye = talle ? talleProd.split(",").map(t => t.trim()).includes(talle) : true;
-        const tipoCoincide = !tipo || tipoProd === tipo;
-        return tipoCoincide && talleIncluye;
-      });
-    }
-
-    function ordenarArray(arr) {
-      if (!orden) return arr;
-      return arr.slice().sort((a, b) => {
-        const precioA = parseInt(a.dataset.precio) || 0;
-        const precioB = parseInt(b.dataset.precio) || 0;
-        return orden === "asc" ? precioA - precioB : precioB - precioA;
-      });
-    }
-
-    let filtradosProductos = filtrarArray(productosArray);
-    let filtradosTejidos = filtrarArray(tejidosArray);
-
-    filtradosProductos = ordenarArray(filtradosProductos);
-    filtradosTejidos = ordenarArray(filtradosTejidos);
-
-    renderizarProductos(filtradosProductos, contenedorProductos);
-    renderizarProductos(filtradosTejidos, contenedorTejidos);
-  }
-
-  filtroTipo.addEventListener("change", filtrarYOrdenar);
-  filtroTalle.addEventListener("change", filtrarYOrdenar);
-  filtroPrecio.addEventListener("change", filtrarYOrdenar);
-
-  cargarProductos();
-</script>
-
-
   
 <!-- FIREBASE -->
 
@@ -358,9 +227,24 @@
   };
 
   firebase.initializeApp(firebaseConfig);
-
-  /* 🔥 MOVER ESTO AQUÍ ARRIBA — antes del DOMContentLoaded */
   const db = firebase.firestore();
+
+  // Control mostrar/ocultar filtro
+  const filtroBtn = document.querySelector('.filtro-btn');
+  const filtrosCard = document.getElementById('filtros-card');
+
+  filtroBtn.addEventListener('click', () => {
+    filtrosCard.classList.toggle('active');
+    filtrosCard.classList.toggle('oculto');
+  });
+
+  // Opcional: cerrar filtros si clickeas afuera
+  document.addEventListener('click', (e) => {
+    if (!filtrosCard.contains(e.target) && !filtroBtn.contains(e.target)) {
+      filtrosCard.classList.add('oculto');
+      filtrosCard.classList.remove('active');
+    }
+  });
 
   document.addEventListener("DOMContentLoaded", () => {
     const filtroTipo = document.getElementById("filtro-tipo");
@@ -370,11 +254,11 @@
     const contProductos = document.getElementById("productos");
     const contTejidos = document.getElementById("tejidos");
 
-    /* 🔥 Asegurate de tenerlos en tu HTML */
     const sentinelProductos = document.getElementById("sentinel-productos");
     const sentinelTejidos = document.getElementById("sentinel-tejidos");
 
     const ITEMS_POR_CARGA = 10;
+
     let todosProductos = [];
     let todosTejidos = [];
     let filtradosProductos = [];
@@ -382,23 +266,89 @@
     let offsetProductos = 0;
     let offsetTejidos = 0;
 
-    async function cargarProductos() {
-      const baseURL = "https://trendmdq.vercel.app/";
+    // Para guardar el último documento traído (paginación)
+    let lastDocProductos = null;
+    let lastDocTejidos = null;
 
+    async function cargarProductosInicial() {
       todosProductos = [];
       todosTejidos = [];
 
-      const categorias = ["productos", "tejidos"];
+      // Cargo solo primeros ITEMS_POR_CARGA documentos de cada colección
+      const snapProductos = await db.collection("productos")
+        .limit(ITEMS_POR_CARGA)
+        .get();
 
-      for (let cat of categorias) {
-        const snap = await db.collection(cat).get();
+      snapProductos.forEach(doc => {
+        const p = doc.data();
+        let imgSrc = p.img || p.imagen || "";
+        if (Array.isArray(imgSrc)) imgSrc = imgSrc[0] || "";
 
-        snap.forEach(doc => {
+        const div = document.createElement("div");
+        div.className = "producto";
+        div.dataset.tipo = p.tipo ? p.tipo.toLowerCase() : "";
+        div.dataset.talle = Array.isArray(p.talle) ? p.talle.map(t => t.toUpperCase()).join(",") : "";
+        div.dataset.precio = p.precio || "0";
+
+        div.innerHTML = `
+          <a href="${p.href || '#'}" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
+            <h3>${p.titulo || p.nombre || ""}</h3>
+            <img src="${imgSrc}" width="150" height="200" loading="lazy" decoding="async" />
+            <p>${p.desc || p.descripcion || ""}</p>
+            <p><strong>$${p.precio || ""}</strong></p>
+          </a>
+        `;
+
+        todosProductos.push(div);
+      });
+
+      lastDocProductos = snapProductos.docs.length > 0 ? snapProductos.docs[snapProductos.docs.length - 1] : null;
+
+      const snapTejidos = await db.collection("tejidos")
+        .limit(ITEMS_POR_CARGA)
+        .get();
+
+      snapTejidos.forEach(doc => {
+        const p = doc.data();
+        let imgSrc = p.img || p.imagen || "";
+        if (Array.isArray(imgSrc)) imgSrc = imgSrc[0] || "";
+
+        const div = document.createElement("div");
+        div.className = "producto";
+        div.dataset.tipo = p.tipo ? p.tipo.toLowerCase() : "";
+        div.dataset.talle = Array.isArray(p.talle) ? p.talle.map(t => t.toUpperCase()).join(",") : "";
+        div.dataset.precio = p.precio || "0";
+
+        div.innerHTML = `
+          <a href="${p.href || '#'}" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
+            <h3>${p.titulo || p.nombre || ""}</h3>
+            <img src="${imgSrc}" width="150" loading="lazy" />
+            <p>${p.desc || p.descripcion || ""}</p>
+            <p><strong>$${p.precio || ""}</strong></p>
+          </a>
+        `;
+
+        todosTejidos.push(div);
+      });
+
+      lastDocTejidos = snapTejidos.docs.length > 0 ? snapTejidos.docs[snapTejidos.docs.length - 1] : null;
+
+      aplicarFiltros();
+    }
+
+    async function cargarMas(tipo) {
+      if (tipo === "productos") {
+        if (!lastDocProductos) return; // No hay más para cargar
+
+        const nextSnap = await db.collection("productos")
+          .startAfter(lastDocProductos)
+          .limit(ITEMS_POR_CARGA)
+          .get();
+
+        nextSnap.forEach(doc => {
           const p = doc.data();
           let imgSrc = p.img || p.imagen || "";
-
           if (Array.isArray(imgSrc)) imgSrc = imgSrc[0] || "";
-          if (imgSrc && !imgSrc.startsWith("http")) imgSrc = baseURL + imgSrc;
 
           const div = document.createElement("div");
           div.className = "producto";
@@ -407,20 +357,56 @@
           div.dataset.precio = p.precio || "0";
 
           div.innerHTML = `
-            <a href="${p.href || '#'}"  rel="noopener noreferrer" style="text-decoration: none">
-              <img src="${imgSrc}" width="150" loading="lazy" />
+            <a href="${p.href || '#'}" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
               <h3>${p.titulo || p.nombre || ""}</h3>
+              <img src="${imgSrc}" width="150" loading="lazy" />
               <p>${p.desc || p.descripcion || ""}</p>
               <p><strong>$${p.precio || ""}</strong></p>
             </a>
           `;
 
-          if (cat === "productos") todosProductos.push(div);
-          else todosTejidos.push(div);
+          todosProductos.push(div);
         });
-      }
 
-      aplicarFiltros();
+        lastDocProductos = nextSnap.docs.length > 0 ? nextSnap.docs[nextSnap.docs.length - 1] : null;
+
+        aplicarFiltros();
+
+      } else if (tipo === "tejidos") {
+        if (!lastDocTejidos) return;
+
+        const nextSnap = await db.collection("tejidos")
+          .startAfter(lastDocTejidos)
+          .limit(ITEMS_POR_CARGA)
+          .get();
+
+        nextSnap.forEach(doc => {
+          const p = doc.data();
+          let imgSrc = p.img || p.imagen || "";
+          if (Array.isArray(imgSrc)) imgSrc = imgSrc[0] || "";
+
+          const div = document.createElement("div");
+          div.className = "producto";
+          div.dataset.tipo = p.tipo ? p.tipo.toLowerCase() : "";
+          div.dataset.talle = Array.isArray(p.talle) ? p.talle.map(t => t.toUpperCase()).join(",") : "";
+          div.dataset.precio = p.precio || "0";
+
+          div.innerHTML = `
+            <a href="${p.href || '#'}" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
+              <h3>${p.titulo || p.nombre || ""}</h3>
+              <img src="${imgSrc}" width="150" loading="lazy" />
+              <p>${p.desc || p.descripcion || ""}</p>
+              <p><strong>$${p.precio || ""}</strong></p>
+            </a>
+          `;
+
+          todosTejidos.push(div);
+        });
+
+        lastDocTejidos = nextSnap.docs.length > 0 ? nextSnap.docs[nextSnap.docs.length - 1] : null;
+
+        aplicarFiltros();
+      }
     }
 
     function aplicarFiltros() {
@@ -455,32 +441,37 @@
       contProductos.innerHTML = "";
       contTejidos.innerHTML = "";
 
-      cargarMas("productos");
-      cargarMas("tejidos");
+      cargarMasDOM("productos");
+      cargarMasDOM("tejidos");
     }
 
-    function cargarMas(tipo) {
+    // Esta función maneja la paginación en el DOM, mostrando por bloques
+    function cargarMasDOM(tipo) {
       if (tipo === "productos") {
-        const slice = filtradosProductos.slice(offsetProductos, offsetProductos + ITEMS_POR_CARGA);
-        slice.forEach(el => contProductos.appendChild(el));
-        offsetProductos += ITEMS_POR_CARGA;
+        contProductos.innerHTML = "";
+        filtradosProductos.forEach(el => contProductos.appendChild(el));
+        offsetProductos = filtradosProductos.length; // offset ya no se usa, pero lo dejo actualizado
       } else {
-        const slice = filtradosTejidos.slice(offsetTejidos, offsetTejidos + ITEMS_POR_CARGA);
-        slice.forEach(el => contTejidos.appendChild(el));
-        offsetTejidos += ITEMS_POR_CARGA;
+        contTejidos.innerHTML = "";
+        filtradosTejidos.forEach(el => contTejidos.appendChild(el));
+        offsetTejidos = filtradosTejidos.length;
       }
     }
 
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          if (entry.target.id === "sentinel-productos") cargarMas("productos");
-          if (entry.target.id === "sentinel-tejidos") cargarMas("tejidos");
+          if (entry.target.id === "sentinel-productos") {
+            cargarMas("productos").then(() => cargarMasDOM("productos"));
+          }
+          if (entry.target.id === "sentinel-tejidos") {
+            cargarMas("tejidos").then(() => cargarMasDOM("tejidos"));
+          }
         }
       });
     });
 
-    /* 🔥 ESTO SE ROMPÍA — ahora solo observa si existen */
+
     if (sentinelProductos) observer.observe(sentinelProductos);
     if (sentinelTejidos) observer.observe(sentinelTejidos);
 
@@ -488,9 +479,14 @@
     filtroTalle.addEventListener("change", aplicarFiltros);
     filtroPrecio.addEventListener("change", aplicarFiltros);
 
-    cargarProductos();
+    cargarProductosInicial();
   });
 </script>
+
+
+
+<!-- Bootstrap JS + Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

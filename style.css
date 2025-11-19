@@ -1,9 +1,10 @@
 /* ===== Fuentes locales ===== */
 @font-face {
-  font-family: 'Arsenica';
-  src: url('fonts/ArsenicaTrial-Medium.ttf') format('truetype');
+  font-family: "Arsenica";
+  src: url("fonts/ArsenicaTrial-Medium.woff2") format("woff2");
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -11,12 +12,14 @@
   src: url('fonts/PlayfairDisplay-Bold.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 
 @font-face {
   font-family: 'MyriadPro';
   src: url('fonts/MYRIADPRO-REGULAR.OTF') format('truetype');
+  font-display: swap;
 }
 
 /* ===== Paleta de colores ===== */
@@ -458,6 +461,7 @@ nav a:hover {
   line-height: 1;
   text-align: center;
   color: var(--color-fondo);
+  font-display: swap;
 }
 
 .title {
@@ -481,6 +485,7 @@ nav a:hover {
   font-weight: 400;
   font-size: 1.5rem;
   line-height: 1.2;
+  font-display: swap;
 }
 
 #tejidos {
@@ -496,6 +501,7 @@ nav a:hover {
   font-size: 2rem;
   color: var(--color-fondo);
   margin-bottom: 30px;
+  font-display: swap;
 }
 
 /* ===== PRODUCTOS ===== */
@@ -512,6 +518,7 @@ nav a:hover {
   font-size: 2rem;
   color: var(--color-fondo);
   margin-bottom: 30px;
+  font-display: swap;
 }
 
 .grid-productos {
@@ -601,6 +608,7 @@ nav a:hover {
   color: var(--color-fondo);
   font-size: 2rem;
   margin-bottom: 10px;
+  font-display: swap;
 }
 
 #contacto p {
@@ -661,6 +669,7 @@ nav a:hover {
   font-weight: normal;
   color: var(--color-fondo);
   font-size: 2rem;
+  font-display: swap;
 }
 
 .detalle-info p {
@@ -668,6 +677,8 @@ nav a:hover {
   font-size: 1.1rem;
   color: var(--color-texto);
   line-height: 1.5;
+  font-display: swap;
+  font-display: swap;
 }
 
 
@@ -730,6 +741,7 @@ nav a:hover {
     color: var(--color-fondo);
     margin-bottom: 30px;
     text-align: center;
+    font-display: swap;
   }
 
   .swiper.mySwiper {
