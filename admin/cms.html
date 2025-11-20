@@ -55,7 +55,7 @@
       <option value="conjunto">Conjunto</option>
       <option value="chaqueta">Chaqueta</option>
       <option value="zapatos">Zapatos</option>
-      <option value="pollera">Pollera</option>
+      <option value="accesorios">Accesorios</option>
     </select>
     <input type="file" id="imagen" multiple />
 
@@ -109,55 +109,87 @@
   const nombreP = nombre.value.trim();
   const descripcionP = descripcion.value.trim();
   const precioP = Number(precio.value);
+  const tipoP = tipo.value;
   const categoriaP = categoria.value;
   const tallesArr = talle.value.trim().split(",").map(t => t.trim()).filter(t => t);
 
-  const files = imagen.files; // <--- ahora tomamos los archivos
+  const files = imagen.files;
 
-  if (!nombreP || !descripcionP || !precioP || files.length === 0) {
-    return alert("Faltan datos o no subiste imágenes");
+  if (!nombreP || !descripcionP || !precioP) {
+    return alert("Faltan datos obligatorios");
   }
 
-  // Subimos todas las imágenes y guardamos las URLs en un array
   let imagenesUrls = [];
-  for (let file of files) {
-    const url = await subirImagen(file);
-    imagenesUrls.push(url);
+
+  // 🟣 SI ESTAMOS EDITANDO
+  if (editando) {
+    const { categoria: catOld, id: idOld, imagenesActuales } = editando;
+
+    // Si el usuario subió imágenes nuevas → reemplazar
+    if (files.length > 0) {
+      for (let file of files) {
+        const url = await subirImagen(file);
+        imagenesUrls.push(url);
+      }
+    } else {
+      // Si NO subió nuevas → mantener las anteriores
+      imagenesUrls = imagenesActuales;
+    }
+
+    await db.collection(catOld).doc(idOld).update({
+      titulo: nombreP,
+      desc: descripcionP,
+      precio: precioP,
+      img: imagenesUrls,
+      tipo: tipoP,
+      talle: tallesArr
+    });
+
+    alert("Producto actualizado!");
+    editando = null;
+    btnGuardar.textContent = "Guardar producto";
+
+  } else {
+    // 🟣 SI ES UN PRODUCTO NUEVO
+    if (files.length === 0) return alert("Subí al menos una imagen.");
+
+    for (let file of files) {
+      const url = await subirImagen(file);
+      imagenesUrls.push(url);
+    }
+
+    const slug = nombreP
+      .toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+    await db.collection(categoriaP).doc(slug).set({
+      titulo: nombreP,
+      desc: descripcionP,
+      precio: precioP,
+      img: imagenesUrls,
+      href: `producto.html?slug=${slug}`,
+      slug: slug,
+      tipo: tipoP,
+      talle: tallesArr,
+      creado: Date.now()
+    });
+
+    alert("Producto cargado!");
   }
 
-  // Crear slug automático
-  const slug = nombreP
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-
-  // Guardar en Firestore
-  await db.collection(categoriaP).doc(slug).set({
-    titulo: nombreP,
-    desc: descripcionP,
-    precio: precioP,
-    img: imagenesUrls,         // <-- ahora es array real de URLs subidas
-    href: `producto.html?slug=${slug}`,
-    slug: slug,
-    tipo: categoriaP,
-    talle: tallesArr,
-    creado: Date.now()
-    
-  });
-  alert("Producto cargado!")
-
-  // Limpiar campos
+  // Limpiar formulario
   nombre.value = "";
   descripcion.value = "";
   precio.value = "";
-  categoria.value = "productos";
   imagen.value = "";
+  categoria.value = "productos";
   talle.value = "";
 
   cargarProductos();
 };
+
 
 
 
@@ -185,6 +217,8 @@ async function cargarProductos() {
       const div = document.createElement("div");
       div.className = "producto";
 
+      let editando = null; 
+
       div.innerHTML = `
         <strong>${cat.toUpperCase()}</strong>
         <h3>${p.nombre || p.titulo || ""}</h3>
@@ -193,6 +227,7 @@ async function cargarProductos() {
         <p><strong>$${p.precio || ""}</strong></p>
         <p><strong>Talles: </strong>${Array.isArray(p.talle) ? p.talle.join(", ") : ""}</p>
         <button onclick="borrar('${cat}', '${doc.id}')">Borrar</button>
+        <button onclick="editar('${cat}', '${doc.id}')">Editar</button>
       `;
 
       lista.appendChild(div);
@@ -214,6 +249,31 @@ window.borrar = async (cat, id) => {
   alert("Producto eliminado exitosamente");
   cargarProductos();
 };
+
+window.editar = async (cat, id) => {
+  const docRef = await db.collection(cat).doc(id).get();
+  const p = docRef.data();
+
+  // Guardamos estado
+  editando = {
+    categoria: cat,
+    id: id,
+    imagenesActuales: p.img
+  };
+
+  // Cargar datos en el formulario
+  categoria.value = cat;
+  nombre.value = p.titulo || p.nombre || "";
+  descripcion.value = p.desc || p.descripcion || "";
+  precio.value = p.precio || "";
+  tipo.value = p.tipo || "vestido";
+  talle.value = Array.isArray(p.talle) ? p.talle.join(", ") : "";
+
+  btnGuardar.textContent = "Guardar cambios";
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
 
 </script>
 
