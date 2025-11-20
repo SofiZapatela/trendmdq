@@ -394,7 +394,7 @@
           div.innerHTML = `
             <a href="${p.href || '#'}" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
               <h3>${p.titulo || p.nombre || ""}</h3>
-              <img src="${imgSrc}" width="150" loading="lazy" />
+              <img src="${imgSrc}" width="150" height="200" loading="lazy" decoding="async" />
               <p>${p.desc || p.descripcion || ""}</p>
               <p><strong>$${p.precio || ""}</strong></p>
             </a>
