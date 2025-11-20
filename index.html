@@ -20,7 +20,7 @@
 
 <meta property="og:title" content="Trend Mdq" />
 <meta property="og:description" content="Ropa hermosa para personas que cuidan el ambiente!" />
-<meta property="og:image" content="https://trendmdq.vercel.app/logo.png" />
+<meta property="og:image" content="https://trendmdq.vercel.app/fotos/logo.png" />
 <meta property="og:url" content="https://trendmdq.vercel.app/" />
 <meta property="og:type" content="website" />
 
@@ -269,9 +269,15 @@
       const div = document.createElement("div");
       div.className = "producto";
 
-      const imgSrc = Array.isArray(p.img || p.imagen)
-        ? (p.img || p.imagen)[0]
-        : p.img || p.imagen || "";
+      let imgSrc = Array.isArray(p.img || p.imagen)
+      ? (p.img || p.imagen)[0]
+      : p.img || p.imagen || "";
+
+    // Agregar width=600 SOLO si es una URL de Firebase
+    if (imgSrc.includes("firebasestorage.googleapis.com")) {
+      imgSrc += "&width=600";
+    }
+
 
       div.dataset.tipo = (p.tipo || "").toLowerCase();
       div.dataset.talle = Array.isArray(p.talle)
