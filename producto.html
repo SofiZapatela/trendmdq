@@ -216,7 +216,8 @@
         }
 
         // Mostrar primera imagen como principal
-        imagenPrincipal.src = imgs[0];
+        // Optimizar imagen principal
+        imagenPrincipal.src = imgs[0] + "&width=900";   
         imagenPrincipal.alt = p.titulo || "Imagen producto";
 
         // Limpiar thumbnails
@@ -225,7 +226,7 @@
         // Crear thumbnails para las demás imágenes
         imgs.forEach((url, i) => {
           const img = document.createElement("img");
-          img.src = url;
+          img.src = url + "&width=200";
           img.alt = `${p.titulo || "Producto"} - Imagen ${i + 1}`;
           img.style.cursor = "pointer";
           img.style.maxWidth = "100px";

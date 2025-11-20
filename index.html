@@ -20,7 +20,7 @@
 
 <meta property="og:title" content="Trend Mdq" />
 <meta property="og:description" content="Ropa hermosa para personas que cuidan el ambiente!" />
-<meta property="og:image" content="https://trendmdq.netlify.app/fotos/logo.png" />
+<meta property="og:image" content="fotos/logo.png" />
 <meta property="og:url" content="https://trendmdq.netlify.app/" />
 <meta property="og:type" content="website" />
 
@@ -232,24 +232,11 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  // Control mostrar/ocultar filtro
-  const filtroBtn = document.querySelector('.filtro-btn');
-  const filtrosCard = document.getElementById('filtros-card');
-
-  filtroBtn.addEventListener('click', () => {
-    filtrosCard.classList.toggle('active');
-    filtrosCard.classList.toggle('oculto');
-  });
-
-  // Opcional: cerrar filtros si clickeas afuera
-  document.addEventListener('click', (e) => {
-    if (!filtrosCard.contains(e.target) && !filtroBtn.contains(e.target)) {
-      filtrosCard.classList.add('oculto');
-      filtrosCard.classList.remove('active');
-    }
-  });
-
   document.addEventListener("DOMContentLoaded", () => {
+
+    /* -------------------------
+       ELEMENTOS DEL DOM
+    ------------------------- */
     const filtroTipo = document.getElementById("filtro-tipo");
     const filtroTalle = document.getElementById("filtro-talle");
     const filtroPrecio = document.getElementById("filtro-precio");
@@ -260,167 +247,114 @@
     const sentinelProductos = document.getElementById("sentinel-productos");
     const sentinelTejidos = document.getElementById("sentinel-tejidos");
 
-    const ITEMS_POR_CARGA = 10;
+    const ITEMS_POR_CARGA = 12;
 
-    let todosProductos = [];
-    let todosTejidos = [];
+    /* -------------------------
+       ESTADOS
+    ------------------------- */
+    let cacheProductos = [];
+    let cacheTejidos = [];
+
     let filtradosProductos = [];
     let filtradosTejidos = [];
-    let offsetProductos = 0;
-    let offsetTejidos = 0;
 
-    // Para guardar el último documento traído (paginación)
     let lastDocProductos = null;
     let lastDocTejidos = null;
 
-    async function cargarProductosInicial() {
-      todosProductos = [];
-      todosTejidos = [];
 
-      // Cargo solo primeros ITEMS_POR_CARGA documentos de cada colección
-      const snapProductos = await db.collection("productos")
+    /* -------------------------
+       CREAR TARJETA DE PRODUCTO
+    ------------------------- */
+    function crearTarjeta(p) {
+      const div = document.createElement("div");
+      div.className = "producto";
+
+      const imgSrc = Array.isArray(p.img || p.imagen)
+        ? (p.img || p.imagen)[0]
+        : p.img || p.imagen || "";
+
+      div.dataset.tipo = (p.tipo || "").toLowerCase();
+      div.dataset.talle = Array.isArray(p.talle)
+        ? p.talle.map(t => t.toUpperCase()).join(",")
+        : "";
+      div.dataset.precio = p.precio || "0";
+
+      div.innerHTML = `
+        <a href="${p.href || '#'}" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
+          <h3>${p.titulo || p.nombre || ""}</h3>
+          <img src="${imgSrc}" width="150" height="200" loading="lazy" decoding="async" />
+          <p>${p.desc || p.descripcion || ""}</p>
+          <p><strong>$${p.precio || ""}</strong></p>
+        </a>
+      `;
+
+      return div;
+    }
+
+    /* -------------------------
+       CARGA INICIAL
+    ------------------------- */
+    async function cargarInicial(coleccion, cacheArr, setLastDoc, contenedor, destinoFiltrado) {
+      const snap = await db.collection(coleccion).limit(ITEMS_POR_CARGA).get();
+
+      snap.forEach(doc => {
+        const data = doc.data();
+        const card = crearTarjeta(data);
+        cacheArr.push(card);
+      });
+
+      setLastDoc(snap.docs.length ? snap.docs[snap.docs.length - 1] : null);
+
+      // Mostrar inicial sin filtrar
+      destinoFiltrado.length = 0;
+      destinoFiltrado.push(...cacheArr);
+      renderizar(contenedor, destinoFiltrado);
+    }
+
+
+    /* -------------------------
+       CARGA ADICIONAL
+    ------------------------- */
+    async function cargarMas(coleccion, lastDoc, cacheArr, destinoFiltrado, contenedor) {
+      if (!lastDoc) return;
+
+      const snap = await db.collection(coleccion)
+        .startAfter(lastDoc)
         .limit(ITEMS_POR_CARGA)
         .get();
 
-      snapProductos.forEach(doc => {
-        const p = doc.data();
-        let imgSrc = p.img || p.imagen || "";
-        if (Array.isArray(imgSrc)) imgSrc = imgSrc[0] || "";
+      snap.forEach(doc => cacheArr.push(crearTarjeta(doc.data())));
 
-        const div = document.createElement("div");
-        div.className = "producto";
-        div.dataset.tipo = p.tipo ? p.tipo.toLowerCase() : "";
-        div.dataset.talle = Array.isArray(p.talle) ? p.talle.map(t => t.toUpperCase()).join(",") : "";
-        div.dataset.precio = p.precio || "0";
-
-        div.innerHTML = `
-          <a href="${p.href || '#'}" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
-            <h3>${p.titulo || p.nombre || ""}</h3>
-            <img src="${imgSrc}" width="150" height="200" loading="lazy" decoding="async" />
-            <p>${p.desc || p.descripcion || ""}</p>
-            <p><strong>$${p.precio || ""}</strong></p>
-          </a>
-        `;
-
-        todosProductos.push(div);
-      });
-
-      lastDocProductos = snapProductos.docs.length > 0 ? snapProductos.docs[snapProductos.docs.length - 1] : null;
-
-      const snapTejidos = await db.collection("tejidos")
-        .limit(ITEMS_POR_CARGA)
-        .get();
-
-      snapTejidos.forEach(doc => {
-        const p = doc.data();
-        let imgSrc = p.img || p.imagen || "";
-        if (Array.isArray(imgSrc)) imgSrc = imgSrc[0] || "";
-
-        const div = document.createElement("div");
-        div.className = "producto";
-        div.dataset.tipo = p.tipo ? p.tipo.toLowerCase() : "";
-        div.dataset.talle = Array.isArray(p.talle) ? p.talle.map(t => t.toUpperCase()).join(",") : "";
-        div.dataset.precio = p.precio || "0";
-
-        div.innerHTML = `
-          <a href="${p.href || '#'}" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
-            <h3>${p.titulo || p.nombre || ""}</h3>
-            <img src="${imgSrc}" width="150" loading="lazy" />
-            <p>${p.desc || p.descripcion || ""}</p>
-            <p><strong>$${p.precio || ""}</strong></p>
-          </a>
-        `;
-
-        todosTejidos.push(div);
-      });
-
-      lastDocTejidos = snapTejidos.docs.length > 0 ? snapTejidos.docs[snapTejidos.docs.length - 1] : null;
+      lastDoc = snap.docs.length ? snap.docs[snap.docs.length - 1] : null;
 
       aplicarFiltros();
+
+      return lastDoc;
     }
 
-    async function cargarMas(tipo) {
-      if (tipo === "productos") {
-        if (!lastDocProductos) return; // No hay más para cargar
 
-        const nextSnap = await db.collection("productos")
-          .startAfter(lastDocProductos)
-          .limit(ITEMS_POR_CARGA)
-          .get();
-
-        nextSnap.forEach(doc => {
-          const p = doc.data();
-          let imgSrc = p.img || p.imagen || "";
-          if (Array.isArray(imgSrc)) imgSrc = imgSrc[0] || "";
-
-          const div = document.createElement("div");
-          div.className = "producto";
-          div.dataset.tipo = p.tipo ? p.tipo.toLowerCase() : "";
-          div.dataset.talle = Array.isArray(p.talle) ? p.talle.map(t => t.toUpperCase()).join(",") : "";
-          div.dataset.precio = p.precio || "0";
-
-          div.innerHTML = `
-            <a href="${p.href || '#'}" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
-              <h3>${p.titulo || p.nombre || ""}</h3>
-              <img src="${imgSrc}" width="150" loading="lazy" />
-              <p>${p.desc || p.descripcion || ""}</p>
-              <p><strong>$${p.precio || ""}</strong></p>
-            </a>
-          `;
-
-          todosProductos.push(div);
-        });
-
-        lastDocProductos = nextSnap.docs.length > 0 ? nextSnap.docs[nextSnap.docs.length - 1] : null;
-
-        aplicarFiltros();
-
-      } else if (tipo === "tejidos") {
-        if (!lastDocTejidos) return;
-
-        const nextSnap = await db.collection("tejidos")
-          .startAfter(lastDocTejidos)
-          .limit(ITEMS_POR_CARGA)
-          .get();
-
-        nextSnap.forEach(doc => {
-          const p = doc.data();
-          let imgSrc = p.img || p.imagen || "";
-          if (Array.isArray(imgSrc)) imgSrc = imgSrc[0] || "";
-
-          const div = document.createElement("div");
-          div.className = "producto";
-          div.dataset.tipo = p.tipo ? p.tipo.toLowerCase() : "";
-          div.dataset.talle = Array.isArray(p.talle) ? p.talle.map(t => t.toUpperCase()).join(",") : "";
-          div.dataset.precio = p.precio || "0";
-
-          div.innerHTML = `
-            <a href="${p.href || '#'}" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
-              <h3>${p.titulo || p.nombre || ""}</h3>
-              <img src="${imgSrc}" width="150" height="200" loading="lazy" decoding="async" />
-              <p>${p.desc || p.descripcion || ""}</p>
-              <p><strong>$${p.precio || ""}</strong></p>
-            </a>
-          `;
-
-          todosTejidos.push(div);
-        });
-
-        lastDocTejidos = nextSnap.docs.length > 0 ? nextSnap.docs[nextSnap.docs.length - 1] : null;
-
-        aplicarFiltros();
-      }
+    /* -------------------------
+       RENDER SIN REEMPLAZAR TODO
+    ------------------------- */
+    function renderizar(contenedor, arr) {
+      // Contenedor vacío → insertamos todo
+      contenedor.innerHTML = "";
+      arr.forEach(el => contenedor.appendChild(el));
     }
 
+
+    /* -------------------------
+       FILTROS
+    ------------------------- */
     function aplicarFiltros() {
       const tipo = filtroTipo.value.toLowerCase();
       const talle = filtroTalle.value.toUpperCase();
       const orden = filtroPrecio.value;
 
       function filtrar(arr) {
-        return arr.filter(p => {
-          const tipoOK = !tipo || p.dataset.tipo === tipo;
-          const talles = p.dataset.talle.split(",");
+        return arr.filter(el => {
+          const tipoOK = !tipo || el.dataset.tipo === tipo;
+          const talles = el.dataset.talle.split(",");
           const talleOK = !talle || talles.includes(talle);
           return tipoOK && talleOK;
         });
@@ -428,61 +362,67 @@
 
       function ordenar(arr) {
         if (!orden) return arr;
-        return arr.slice().sort((a, b) => {
-          const A = parseInt(a.dataset.precio) || 0;
-          const B = parseInt(b.dataset.precio) || 0;
+        return [...arr].sort((a, b) => {
+          const A = parseInt(a.dataset.precio);
+          const B = parseInt(b.dataset.precio);
           return orden === "asc" ? A - B : B - A;
         });
       }
 
-      filtradosProductos = ordenar(filtrar(todosProductos));
-      filtradosTejidos = ordenar(filtrar(todosTejidos));
+      filtradosProductos = ordenar(filtrar(cacheProductos));
+      filtradosTejidos = ordenar(filtrar(cacheTejidos));
 
-      offsetProductos = 0;
-      offsetTejidos = 0;
-
-      contProductos.innerHTML = "";
-      contTejidos.innerHTML = "";
-
-      cargarMasDOM("productos");
-      cargarMasDOM("tejidos");
+      renderizar(contProductos, filtradosProductos);
+      renderizar(contTejidos, filtradosTejidos);
     }
 
-    // Esta función maneja la paginación en el DOM, mostrando por bloques
-    function cargarMasDOM(tipo) {
-      if (tipo === "productos") {
-        contProductos.innerHTML = "";
-        filtradosProductos.forEach(el => contProductos.appendChild(el));
-        offsetProductos = filtradosProductos.length; // offset ya no se usa, pero lo dejo actualizado
-      } else {
-        contTejidos.innerHTML = "";
-        filtradosTejidos.forEach(el => contTejidos.appendChild(el));
-        offsetTejidos = filtradosTejidos.length;
-      }
-    }
 
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
+    /* -------------------------
+       OBSERVER → PAGINACIÓN REAL
+    ------------------------- */
+    const observer = new IntersectionObserver(async entries => {
+      for (const entry of entries) {
         if (entry.isIntersecting) {
           if (entry.target.id === "sentinel-productos") {
-            cargarMas("productos").then(() => cargarMasDOM("productos"));
+            lastDocProductos = await cargarMas(
+              "productos",
+              lastDocProductos,
+              cacheProductos,
+              filtradosProductos,
+              contProductos
+            );
           }
           if (entry.target.id === "sentinel-tejidos") {
-            cargarMas("tejidos").then(() => cargarMasDOM("tejidos"));
+            lastDocTejidos = await cargarMas(
+              "tejidos",
+              lastDocTejidos,
+              cacheTejidos,
+              filtradosTejidos,
+              contTejidos
+            );
           }
         }
-      });
+      }
     });
-
 
     if (sentinelProductos) observer.observe(sentinelProductos);
     if (sentinelTejidos) observer.observe(sentinelTejidos);
 
+
+    /* -------------------------
+       EVENTOS FILTROS
+    ------------------------- */
     filtroTipo.addEventListener("change", aplicarFiltros);
     filtroTalle.addEventListener("change", aplicarFiltros);
     filtroPrecio.addEventListener("change", aplicarFiltros);
 
-    cargarProductosInicial();
+
+    /* -------------------------
+       EJECUTAR INICIALES
+    ------------------------- */
+    cargarInicial("productos", cacheProductos, d => lastDocProductos = d, contProductos, filtradosProductos);
+    cargarInicial("tejidos", cacheTejidos, d => lastDocTejidos = d, contTejidos, filtradosTejidos);
+
   });
 </script>
 

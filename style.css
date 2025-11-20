@@ -583,6 +583,7 @@ nav a:hover {
   font-size: 0.95rem;
   color: var(--color-texto);
   margin: 0 0 10px;
+  margin-top: 15px;
 }
 
 .producto p:last-child {
