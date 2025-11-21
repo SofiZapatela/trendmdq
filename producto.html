@@ -238,7 +238,7 @@
         img.style.borderRadius = "5px";
 
         img.onclick = () => {
-          imagenPrincipal.src = url;
+          imagenPrincipal.src = url + "&width=900";
           pequenasContainer.querySelectorAll("img").forEach((x) => x.classList.remove("activa"));
           img.classList.add("activa");
         };
