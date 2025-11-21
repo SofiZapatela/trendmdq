@@ -81,7 +81,7 @@
     <h2>NUEVOS INGRESOS</h2>
     <div class="swiper mySwiper">
       <div class="swiper-wrapper">
-        <div class="swiper-slide"><img src="fotos/blusa-amalfi.jpeg" alt="Nuevo 1"></div>
+        <div class="swiper-slide"><img src="fotos/blusa-amalfi.webp" alt="Nuevo 1"></div>
         <div class="swiper-slide"><img src="fotos/blusa-jean.jpeg" alt="Nuevo 2"></div>
         <div class="swiper-slide"><img src="fotos/mono-leopardo.jpeg" alt="Nuevo 3"></div>
         <div class="swiper-slide"><img src="fotos/mono-taxi.jpeg" alt="Nuevo 4"></div>
@@ -308,6 +308,7 @@
     function crearTarjeta(p) {
     const div = document.createElement("div");
     div.className = "producto";
+    
 
     let imgSrc = Array.isArray(p.img || p.imagen)
       ? (p.img || p.imagen)[0]

@@ -83,6 +83,10 @@
   const db = firebase.firestore();
   const storage = firebase.storage();
 
+  // GLOBAL: estado de edición
+  let editando = null;
+
+
   /* --- 2) LOGIN --- */
   btnLogin.onclick = () => {
     const emailVal = document.getElementById("email").value;
@@ -98,58 +102,111 @@
   };
 
   /* --- 3) SUBIR IMAGEN --- */
-  async function subirImagen(file) {
-    const ref = storage.ref("productos/" + Date.now() + "-" + file.name);
-    await ref.put(file);
-    return await ref.getDownloadURL();
+    async function procesarImagen(file, maxSize = 900) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+
+      reader.onload = (e) => {
+        const img = new Image();
+        img.src = e.target.result;
+
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          let width = img.width;
+          let height = img.height;
+
+          // Ajustar proporciones
+          if (width > height) {
+            if (width > maxSize) {
+              height *= maxSize / width;
+              width = maxSize;
+            }
+          } else {
+            if (height > maxSize) {
+              width *= maxSize / height;
+              height = maxSize;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Convertir a WebP
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) return reject("Error al convertir a WebP");
+              resolve(blob);
+            },
+            "image/webp",
+            0.8 // calidad
+          );
+        };
+      };
+    });
   }
+
+  async function subirImagen(file) {
+    try {
+      console.log("Procesando archivo:", file.name);
+      // procesa a webp y 900px (tu procesarImagen ya lo hace)
+      const webpBlob = await procesarImagen(file);
+
+      const newName = Date.now() + "-" + file.name.replace(/\.[^.]+$/, "") + ".webp";
+      const ref = storage.ref("productos/" + newName);
+
+      const uploadTask = await ref.put(webpBlob, { contentType: "image/webp" });
+      console.log("Upload completo:", uploadTask.metadata.fullPath);
+
+      const url = await ref.getDownloadURL();
+      console.log("URL obtenida:", url);
+      return url;
+    } catch (err) {
+      console.error("Error en subirImagen:", err);
+      throw err; // que lo maneje el caller
+    }
+  }
+
+
 
   /* --- 4) GUARDAR PRODUCTO --- */
  btnGuardar.onclick = async () => {
-  const nombreP = nombre.value.trim();
-  const descripcionP = descripcion.value.trim();
-  const precioP = Number(precio.value);
-  const tipoP = tipo.value;
-  const categoriaP = categoria.value;
-  const tallesArr = talle.value.trim().split(",").map(t => t.trim()).filter(t => t);
+  try {
+    const files = imagen.files;
+    console.log("btnGuardar click — editando?", editando, "files:", files.length);
 
-  const files = imagen.files;
+    if (editando) {
+      const { categoria: catOld, id: idOld, imagenesActuales } = editando;
 
-  if (!nombreP || !descripcionP || !precioP) {
-    return alert("Faltan datos obligatorios");
-  }
+      let imagenesUrls = imagenesActuales || [];
 
-  let imagenesUrls = [];
+      if (files.length > 0) {
+        imagenesUrls = [];
+        for (let file of files) {
+          const url = await subirImagen(file);
+          imagenesUrls.push(url);
+        }
+      } // else mantiene imagenesActuales
 
-  // 🟣 SI ESTAMOS EDITANDO
-  if (editando) {
-    const { categoria: catOld, id: idOld, imagenesActuales } = editando;
-
-    // Si el usuario subió imágenes nuevas → reemplazar
-    if (files.length > 0) {
-      for (let file of files) {
-        const url = await subirImagen(file);
-        imagenesUrls.push(url);
-      }
+      console.log("Actualizando documento", catOld, idOld, "con imgs:", imagenesUrls);
+      await db.collection(catOld).doc(idOld).update({
+        titulo: nombre.value.trim(),
+        desc: descripcion.value.trim(),
+        precio: Number(precio.value),
+        img: imagenesUrls,
+        tipo: tipo.value,
+        talle: talle.value.trim().split(",").map(t=>t.trim()).filter(t=>t)
+      });
+      console.log("Firestore update OK");
+      alert("Producto actualizado!");
+      editando = null;
+      btnGuardar.textContent = "Guardar producto";
+      cargarProductos();
+      return;
     } else {
-      // Si NO subió nuevas → mantener las anteriores
-      imagenesUrls = imagenesActuales;
-    }
-
-    await db.collection(catOld).doc(idOld).update({
-      titulo: nombreP,
-      desc: descripcionP,
-      precio: precioP,
-      img: imagenesUrls,
-      tipo: tipoP,
-      talle: tallesArr
-    });
-
-    alert("Producto actualizado!");
-    editando = null;
-    btnGuardar.textContent = "Guardar producto";
-
-  } else {
     // 🟣 SI ES UN PRODUCTO NUEVO
     if (files.length === 0) return alert("Subí al menos una imagen.");
 
@@ -188,6 +245,10 @@
   talle.value = "";
 
   cargarProductos();
+} catch (err) {
+    console.error("Error en guardar producto:", err);
+    alert("Ocurrió un error. Mirá la consola para detalles.");
+  }
 };
 
 
@@ -216,8 +277,6 @@ async function cargarProductos() {
 
       const div = document.createElement("div");
       div.className = "producto";
-
-      let editando = null; 
 
       div.innerHTML = `
         <strong>${cat.toUpperCase()}</strong>
