@@ -11,7 +11,6 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
-
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
 
@@ -23,6 +22,11 @@
   />
 </head>
 <body>
+
+  <!-- 🔥 LOADER AÑADIDO -->
+  <div id="loader" class="loader"></div>
+
+
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
       <a class="navbar-brand" id="logo-link" href="#">
@@ -114,54 +118,23 @@
     </div>
   </div>
 
-  <footer
-    style="
-      text-align: center;
-      padding: 20px;
-      background-color: #29899b;
-      color: #f5ebdd;
-      font-family: Arial, sans-serif;
-    "
-  >
-    <p style="margin: 0;">&copy; 2025 Trend Mdq</p>
-    <div
-      style="
-        margin-top: 10px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 25px;
-      "
-    >
-      <!-- Instagram -->
-      <a
-        href="https://www.instagram.com/trendmdq/"
-        target="_blank"
-        rel="noopener noreferrer"
-        style="color: #f5ebdd; font-size: 24px; text-decoration: none"
-      >
-        <i class="fab fa-instagram" aria-hidden="true"></i
-        ><span class="sr-only">Instagram</span>
-      </a>
-
-      <!-- Ubicación sin link -->
-      <div
-        style="
-          color: #f5ebdd;
-          display: inline-flex;
-          align-items: center;
-          font-size: 18px;
-        "
-      >
-        <i
-          class="fas fa-map-marker-alt"
-          aria-hidden="true"
-          style="font-size: 22px; margin-right: 6px"
-        ></i>
-        <span>Mar del Plata</span>
-      </div>
+  <footer style="text-align:center; padding: 20px; background-color: #29899b; color: #F5EBDD; font-family: Arial, sans-serif;">
+  <p style="margin:0;">&copy; 2025 Trend Mdq</p>
+  <div style="margin-top:10px; display: flex; justify-content: center; align-items: center; gap: 25px;">
+    
+    <!-- Instagram -->
+    <a href="https://www.instagram.com/trendmdq/" target="_blank" rel="noopener noreferrer" style="color:#F5EBDD; font-size: 24px; text-decoration:none;">
+      <i class="fab fa-instagram" aria-hidden="true"></i><span class="sr-only">Instagram</span>
+    </a>
+    
+    <!-- Ubicación sin link -->
+    <div style="color:#F5EBDD; display: inline-flex; align-items: center; font-size: 18px;">
+      <i class="fas fa-map-marker-alt" aria-hidden="true" style="font-size: 22px; margin-right: 6px;"></i>
+      <span>Mar del Plata</span>
     </div>
-  </footer>
+    
+  </div>
+</footer>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -183,115 +156,132 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Leer slug de URL
     const urlParams = new URLSearchParams(window.location.search);
-    const slug = new URLSearchParams(window.location.search).get("slug");
+    const slug = urlParams.get("slug");
     const cacheKey = `producto_${slug}`;
 
 
-      function mostrarProducto(p) {
-        document.getElementById("titulo").textContent = p.titulo || "";
-        document.getElementById("descripcion").textContent = p.desc || "";
-        document.getElementById("precio").textContent = p.precio || "";
-        
-        // Talles
-        if (p.talle && p.talle.length > 0) {
-          document.getElementById("talles").textContent = "TALLE: " + p.talle.join(", ");
-        } else {
-          document.getElementById("talles").textContent = "";
-        }
+    /* ---------------------------
+       🔥 FUNCIÓN: OCULTAR LOADER
+    ---------------------------- */
+    function ocultarLoaderCuandoImagenesCarguen() {
+      const imgs = document.querySelectorAll("img");
+      let total = imgs.length;
+      let cargadas = 0;
 
-        // Fotos: si es array, si no, convertir a array para evitar errores
-        let imgs = [];
-        if (Array.isArray(p.img)) {
-          imgs = p.img;
-        } else if (typeof p.img === "string" && p.img.trim() !== "") {
-          imgs = [p.img];
-        }
-
-        const galeria = document.querySelector(".galeria-container");
-        const imagenPrincipal = document.getElementById("imagenPrincipal");
-        const pequenasContainer = document.querySelector(".pequenas-container");
-
-        if (imgs.length === 0) {
-          // No hay imágenes
-          imagenPrincipal.src = "";
-          pequenasContainer.innerHTML = "<p>No hay imágenes disponibles</p>";
-          return;
-        }
-
-        // Mostrar primera imagen como principal
-        // Optimizar imagen principal
-        imagenPrincipal.src = imgs[0] + "&width=900";
-        imagenPrincipal.loading = "eager";
-        imagenPrincipal.decoding = "async";
-        imagenPrincipal.alt = p.titulo || "Imagen producto";
-
-        // Limpiar thumbnails
-        pequenasContainer.innerHTML = "";
-
-        // Crear thumbnails para las demás imágenes
-        imgs.forEach((url, i) => {
-          const img = document.createElement("img");
-          img.src = url + "&width=200";
-          img.loading = "lazy";
-          img.decoding = "async";
-          img.alt = `${p.titulo || "Producto"} - Imagen ${i + 1}`;
-          img.style.cursor = "pointer";
-          img.style.maxWidth = "100px";
-          img.style.borderRadius = "5px";
-          img.onclick = () => {
-            // Cambiar imagen principal
-            imagenPrincipal.src = url;
-
-            // Remover clase activa de todas
-            pequenasContainer.querySelectorAll("img").forEach((img) => {
-              img.classList.remove("activa");
-            });
-
-            img.classList.add("activa");
-          };
-
-          // Marcar la primera thumbnail como activa
-          if (i === 0) {
-            img.classList.add("activa");
-            img.style.border = "2px solid #29899b";
-          } else {
-            img.style.border = "2px solid transparent";
-          }
-
-          pequenasContainer.appendChild(img);
-        });
+      if (total === 0) {
+        document.getElementById("loader").style.display = "none";
+        return;
       }
 
-      if (!slug) {
-        document.querySelector(".detalle-producto").innerHTML = "<p>Producto no especificado</p>";
+      imgs.forEach((img) => {
+        if (img.complete) {
+          cargadas++;
+          if (cargadas === total) document.getElementById("loader").style.display = "none";
         } else {
-        const cacheData = localStorage.getItem(cacheKey);
-        if (cacheData) {
-            mostrarProducto(JSON.parse(cacheData));
-        } else {
-            Promise.all([
-            db.collection("productos").doc(slug).get(),
-            db.collection("tejidos").doc(slug).get()
-            ]).then(([docProd, docTej]) => {
-            if (docProd.exists) {
-                mostrarProducto(docProd.data());
-                localStorage.setItem(cacheKey, JSON.stringify(docProd.data()));
-            } else if (docTej.exists) {
-                mostrarProducto(docTej.data());
-                localStorage.setItem(cacheKey, JSON.stringify(docTej.data()));
-            } else {
-                document.querySelector(".detalle-producto").innerHTML = "<p>Producto no encontrado</p>";
-            }
-            });
+          img.addEventListener("load", () => {
+            cargadas++;
+            if (cargadas === total) document.getElementById("loader").style.display = "none";
+          });
+          img.addEventListener("error", () => {
+            cargadas++;
+            if (cargadas === total) document.getElementById("loader").style.display = "none";
+          });
         }
-        }
+      });
+    }
+
+
+    /* ---------------------------
+         🔥 FUNCIÓN PRINCIPAL
+    ---------------------------- */
+    function mostrarProducto(p) {
+      document.getElementById("titulo").textContent = p.titulo || "";
+      document.getElementById("descripcion").textContent = p.desc || "";
+      document.getElementById("precio").textContent = p.precio || "";
+
+      // Talles
+      if (p.talle && p.talle.length > 0) {
+        document.getElementById("talles").textContent = "TALLE: " + p.talle.join(", ");
+      } else {
+        document.getElementById("talles").textContent = "";
+      }
+
+      let imgs = [];
+      if (Array.isArray(p.img)) {
+        imgs = p.img;
+      } else if (typeof p.img === "string" && p.img.trim() !== "") {
+        imgs = [p.img];
+      }
+
+      const imagenPrincipal = document.getElementById("imagenPrincipal");
+      const pequenasContainer = document.querySelector(".pequenas-container");
+
+      if (imgs.length === 0) {
+        imagenPrincipal.src = "";
+        pequenasContainer.innerHTML = "<p>No hay imágenes disponibles</p>";
+        ocultarLoaderCuandoImagenesCarguen();
+        return;
+      }
+
+      imagenPrincipal.src = imgs[0] + "&width=900";
+
+      pequenasContainer.innerHTML = "";
+
+      imgs.forEach((url, i) => {
+        const img = document.createElement("img");
+        img.src = url + "&width=900";
+        img.loading = "lazy";
+        img.decoding = "async";
+        img.style.cursor = "pointer";
+        img.style.maxWidth = "100px";
+        img.style.borderRadius = "5px";
+
+        img.onclick = () => {
+          imagenPrincipal.src = url;
+          pequenasContainer.querySelectorAll("img").forEach((x) => x.classList.remove("activa"));
+          img.classList.add("activa");
+        };
+
+        if (i === 0) img.classList.add("activa");
+
+        pequenasContainer.appendChild(img);
+      });
+
+      // 🔥 Cuando ya se crearon todas las imágenes → esperar a que terminen de cargar
+      setTimeout(ocultarLoaderCuandoImagenesCarguen, 50);
+    }
+
+    if (!slug) {
+      document.querySelector(".detalle-producto").innerHTML = "<p>Producto no especificado</p>";
+      ocultarLoaderCuandoImagenesCarguen();
+    } else {
+      const cacheData = localStorage.getItem(cacheKey);
+      if (cacheData) {
+        mostrarProducto(JSON.parse(cacheData));
+      } else {
+        Promise.all([
+          db.collection("productos").doc(slug).get(),
+          db.collection("tejidos").doc(slug).get()
+        ]).then(([docProd, docTej]) => {
+          if (docProd.exists) {
+            mostrarProducto(docProd.data());
+            localStorage.setItem(cacheKey, JSON.stringify(docProd.data()));
+          } else if (docTej.exists) {
+            mostrarProducto(docTej.data());
+            localStorage.setItem(cacheKey, JSON.stringify(docTej.data()));
+          } else {
+            document.querySelector(".detalle-producto").innerHTML = "<p>Producto no encontrado</p>";
+            ocultarLoaderCuandoImagenesCarguen();
+          }
+        });
+      }
+    }
 
   </script>
 
-    <script defer src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
 </body>
 </html>
