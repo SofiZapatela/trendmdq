@@ -250,6 +250,46 @@
     const ITEMS_POR_CARGA = 12;
 
     /* -------------------------
+   TOGGLE VISUAL FILTROS (BOTÓN)
+   Pegar dentro de DOMContentLoaded
+------------------------- */
+  const filtroBtn = document.querySelector('.filtro-btn');
+  const filtrosCard = document.getElementById('filtros-card');
+
+  // safety: si no existen, no rompe
+  if (filtroBtn && filtrosCard) {
+    // Evitar que clicks dentro del card cierren inmediatamente
+    filtrosCard.addEventListener('click', (e) => e.stopPropagation());
+
+    // Toggle al click del botón
+    filtroBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // que no burbujee al document
+      filtrosCard.classList.toggle('oculto');
+      filtrosCard.classList.toggle('active');
+    });
+
+    // Cerrar al clickear afuera
+    document.addEventListener('click', (e) => {
+      if (!filtrosCard.classList.contains('oculto') &&
+          !filtrosCard.contains(e.target) &&
+          !filtroBtn.contains(e.target)
+      ) {
+        filtrosCard.classList.add('oculto');
+        filtrosCard.classList.remove('active');
+      }
+    });
+
+    // Opcional: cerrar con ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === "Escape") {
+        filtrosCard.classList.add('oculto');
+        filtrosCard.classList.remove('active');
+      }
+    });
+  }
+
+
+    /* -------------------------
        ESTADOS
     ------------------------- */
     let cacheProductos = [];
@@ -266,36 +306,35 @@
        CREAR TARJETA DE PRODUCTO
     ------------------------- */
     function crearTarjeta(p) {
-      const div = document.createElement("div");
-      div.className = "producto";
+    const div = document.createElement("div");
+    div.className = "producto";
 
-      let imgSrc = Array.isArray(p.img || p.imagen)
+    let imgSrc = Array.isArray(p.img || p.imagen)
       ? (p.img || p.imagen)[0]
       : p.img || p.imagen || "";
 
-    // Agregar width=600 SOLO si es una URL de Firebase
     if (imgSrc.includes("firebasestorage.googleapis.com")) {
       imgSrc += "&width=600";
     }
 
+    div.innerHTML = `
+      <a href="${p.href || '#'}" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
+        <h3>${p.titulo || p.nombre || ""}</h3>
+        <img src="${imgSrc}" width="150" height="200" loading="lazy" decoding="async" />
+        <p>${p.desc || p.descripcion || ""}</p>
+        <p><strong>$${p.precio || ""}</strong></p>
+      </a>
+    `;
 
-      div.dataset.tipo = (p.tipo || "").toLowerCase();
-      div.dataset.talle = Array.isArray(p.talle)
-        ? p.talle.map(t => t.toUpperCase()).join(",")
-        : "";
-      div.dataset.precio = p.precio || "0";
+    // 🔥🔥🔥 SETEAR DATA *DESPUÉS* DEL innerHTML
+    div.dataset.tipo = (p.tipo || "").toLowerCase();
+    div.dataset.talle = Array.isArray(p.talle)
+      ? p.talle.map(t => t.toUpperCase()).join(",")
+      : "";
+    div.dataset.precio = p.precio || "0";
 
-      div.innerHTML = `
-        <a href="${p.href || '#'}" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
-          <h3>${p.titulo || p.nombre || ""}</h3>
-          <img src="${imgSrc}" width="150" height="200" loading="lazy" decoding="async" />
-          <p>${p.desc || p.descripcion || ""}</p>
-          <p><strong>$${p.precio || ""}</strong></p>
-        </a>
-      `;
-
-      return div;
-    }
+    return div;
+  }
 
     /* -------------------------
        CARGA INICIAL
