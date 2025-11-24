@@ -207,34 +207,48 @@
       cargarProductos();
       return;
     } else {
-    // 🟣 SI ES UN PRODUCTO NUEVO
-    if (files.length === 0) return alert("Subí al menos una imagen.");
+  // 🟣 SI ES UN PRODUCTO NUEVO
+  if (files.length === 0) return alert("Subí al menos una imagen.");
 
-    for (let file of files) {
-      const url = await subirImagen(file);
-      imagenesUrls.push(url);
-    }
+  let imagenesUrls = [];
 
-    const slug = nombreP
-      .toLowerCase()
-      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-
-    await db.collection(categoriaP).doc(slug).set({
-      titulo: nombreP,
-      desc: descripcionP,
-      precio: precioP,
-      img: imagenesUrls,
-      href: `producto.html?slug=${slug}`,
-      slug: slug,
-      tipo: tipoP,
-      talle: tallesArr,
-      creado: Date.now()
-    });
-
-    alert("Producto cargado!");
+  for (let file of files) {
+    const url = await subirImagen(file);
+    imagenesUrls.push(url);
   }
+
+  const nombreP = nombre.value.trim();
+  const descripcionP = descripcion.value.trim();
+  const precioP = Number(precio.value);
+  const categoriaP = categoria.value;
+  const tipoP = tipo.value;
+
+  const tallesArr = talle.value
+    .trim()
+    .split(",")
+    .map(t => t.trim())
+    .filter(t => t);
+
+  const slug = nombreP
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  await db.collection(categoriaP).doc(slug).set({
+    titulo: nombreP,
+    desc: descripcionP,
+    precio: precioP,
+    img: imagenesUrls,
+    href: `producto.html?slug=${slug}`,
+    slug: slug,
+    tipo: tipoP,
+    talle: tallesArr,
+    creado: Date.now()
+  });
+
+  alert("Producto cargado!");
+}
 
   // Limpiar formulario
   nombre.value = "";
