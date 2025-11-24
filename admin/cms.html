@@ -202,6 +202,15 @@
       });
       console.log("Firestore update OK");
       alert("Producto actualizado!");
+
+          // Limpiar formulario
+      nombre.value = "";
+      descripcion.value = "";
+      precio.value = "";
+      imagen.value = "";
+      categoria.value = "productos";
+      talle.value = "";
+      
       editando = null;
       btnGuardar.textContent = "Guardar producto";
       cargarProductos();
